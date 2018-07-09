@@ -1,56 +1,51 @@
-var config = {
-  type: Phaser.AUTO,
-  width: 800,
-  height: 600,
-  scene: {
-    preload: preload,
-    create: create,
-    update, update
-  }
+// Initiate the Phaser framework.
+var game = new Phaser.Game(800, 600, Phaser.AUTO);
+
+game.state.add('GameState', GameState);
+game.state.start('GameState');
+
+var GameState = {
+  // Load the game assets before the game starts.
+  preload: function () {
+    game.load.image('Background', 'assets/bg.png')
+    game.load.image('Background_Coins', 'assets/bg-coins.png')
+    game.load.image('Background_Overlay', 'assets/dark-bg-overlay.png')
+    game.load.image('Big_Win', 'assets/big-win.png')
+    game.load.image('Huge_Win', 'assets/huge-win.png')
+    game.load.image('Coin_Animation', 'assets/coin-animation.png')
+    game.load.image('Install_Button', 'assets/install-btn.png')
+    game.load.image('Lines_Number', 'assets/lines-number.png')
+    game.load.image('Cursor', 'assets/mousehand.png')
+    game.load.image('Numbers_Top', 'assets/number-button.png')
+    game.load.image('Reel_Background', 'assets/reel-bg.png')
+    game.load.image('Reel_Overlay', 'assets/reel-overlay.png')
+    game.load.image('Slotmachine', 'assets/slotmachine.png')
+    game.load.image('Slots_7', 'assets/slots-7.png')
+    game.load.image('Slots_10', 'assets/slots-10.png')
+    game.load.image('Slots_Bar', 'assets/slots-bar.png')
+    game.load.image('Slots_Bar_Lighter', 'assets/slots-bar-lighter.png')
+    game.load.image('Slots_Crown', 'assets/slots-crown.png')
+    game.load.image('Slots_Diamond', 'assets/slots-diamond.png')
+    game.load.image('Slots_Diamond_Lighter', 'slots-diamond-lighter.png')
+    game.load.image('Slots_Lemon', 'assets/slots-lemon.png')
+    game.load.image('Slots_Melon', 'assets/slots-watermelon.png')
+    game.load.image('Spin_Button', 'assets/spin-btn.png')
+    game.load.image('Spin_Button_Lighter', 'assets/spin-btn-glow.png')
+    game.load.image('Start_Spinning', 'assets/star-spinning.png')
+    game.load.image('Top_Bars_Glow', 'assets/top-bars-glow.png')
+    game.load.image('Top_Diamond_Glow', 'assets/top-diamond-glow.png')
+    game.load.image('Total_Bet_Number', 'assets/top-bet-number.png')
+
+    game.load.spritesheet('Numbers_Spritesheet', 'assets/red-numbers-sprite', 11, 22)
+  },
+  // Executed after everything is loaded.
+  create: function () {
+    game.physics.startSystem(Phaser.physics.ARCADE)
+    this.add.image(800, 600, 'Background');
+    this.add.image(400, 400, 'Slotmachine');
+  },
+  // Executed per frame.
+  update: function () {
+
+  },
 };
-
-/* Initializing the actual Phaser game object.*/
-var Game = new Phaser.Game(config);
-
-
-function preload() {
-  game.load.image('Background', 'assets/bg.png')
-  game.load.image('Background_Coins', 'assets/bg-coins.png')
-  game.load.image('Background_Overlay', 'assets/dark-bg-overlay.png')
-  game.load.image('Big_Win', 'assets/big-win.png')
-  game.load.image('Huge_Win', 'assets/huge-win.png')
-  game.load.image('Coin_Animation', 'assets/coin-animation.png')
-  game.load.image('Install_Button', 'assets/install-btn.png')
-  game.load.image('Lines_Number', 'assets/lines-number.png')
-  game.load.image('Cursor', 'assets/mousehand.png')
-  game.load.image('Numbers_Top', 'assets/number-button.png')
-  game.load.image('Reel_Background', 'assets/reel-bg.png')
-  game.load.image('Reel_Overlay', 'assets/reel-overlay.png')
-  game.load.image('Slotmachine', 'assets/slotmachine.png')
-  game.load.image('Slots_7', 'assets/slots-7.png')
-  game.load.image('Slots_10', 'assets/slots-10.png')
-  game.load.image('Slots_Bar', 'assets/slots-bar.png')
-  game.load.image('Slots_Bar_Lighter', 'assets/slots-bar-lighter.png')
-  game.load.image('Slots_Crown', 'assets/slots-crown.png')
-  game.load.image('Slots_Diamond', 'assets/slots-diamond.png')
-  game.load.image('Slots_Diamond_Lighter', 'slots-diamond-lighter.png')
-  game.load.image('Slots_Lemon', 'assets/slots-lemon.png')
-  game.load.image('Slots_Melon', 'assets/slots-watermelon.png')
-  game.load.image('Spin_Button', 'assets/spin-btn.png')
-  game.load.image('Spin_Button_Lighter', 'assets/spin-btn-glow.png')
-  game.load.image('Start_Spinning', 'assets/star-spinning.png')
-  game.load.image('Top_Bars_Glow', 'assets/top-bars-glow.png')
-  game.load.image('Top_Diamond_Glow', 'assets/top-diamond-glow.png')
-  game.load.image('Total_Bet_Number', 'assets/top-bet-number.png')
-
-  game.load.spritesheet('Numbers_Spritesheet', 'assets/red-numbers-sprite', 11, 22)
-}
-
-function create() {
-  game.physics.startSystem(Phaser.physics.ARCADE)
-}
-
-function update() {
-
-}
-
