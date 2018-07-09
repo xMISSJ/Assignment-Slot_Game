@@ -1,5 +1,5 @@
 // Initiate the Phaser framework.
-var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {preload: preload, create: create, update, update});
+var game = new Phaser.Game(750, 450, Phaser.AUTO, '', {preload: preload, create: create, update, update});
 
 // Load the game assets before the game starts.
 function preload() {
@@ -15,7 +15,7 @@ function preload() {
   game.load.image('Numbers_Top', 'assets/number-button.png')
   game.load.image('Reel_Background', 'assets/reel-bg.png')
   game.load.image('Reel_Overlay', 'assets/reel-overlay.png')
-  game.load.image('Slotmachine', 'assets/slotmachine.jpg')
+  game.load.image('Slotmachine', 'assets/slotmachine.png')
   game.load.image('Slots_7', 'assets/slots-7.png')
   game.load.image('Slots_10', 'assets/slots-10.png')
   game.load.image('Slots_Bar', 'assets/slots-bar.png')
@@ -36,8 +36,11 @@ function preload() {
 }
 // Executed after everything is loaded.
 function create() {
-  var background = game.add.image(800, 600, 'Background');
-  var slotmachine = game.add.image(400, 400, 'Slotmachine');
+  game.add.image(0, 0, 'Background');
+
+  var slotmachine = game.add.image(155, 12, 'Slotmachine');
+  // Scales the slotmachine down.
+  slotmachine.scale.setTo(0.68,0.68);
 }
 // Executed per frame.
 function update() {
