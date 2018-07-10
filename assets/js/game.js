@@ -15,7 +15,7 @@ function preload() {
   game.load.image('Numbers_Top', 'assets/number-button.png')
   game.load.image('Reel_Background', 'assets/reel-bg.png')
   game.load.image('Reel_Overlay', 'assets/reel-overlay.png')
-  game.load.image('Slotmachine', 'assets/slotmachine-transparent.png')
+  game.load.image('Slotmachine', 'assets/slotmachine-transparant.png')
   game.load.image('Slots_7', 'assets/slots-7.png')
   game.load.image('Slots_10', 'assets/slots-10.png')
   game.load.image('Slots_Bar', 'assets/slots-bar.png')
@@ -40,7 +40,7 @@ function create() {
 
   var slotmachine = game.add.image(155, 12, 'Slotmachine');
   // Scales the slotmachine down.
-  slotmachine.scale.setTo(0.68,0.68);
+  slotmachine.scale.setTo(0.62,0.62);
 }
 // Executed per frame.
 function update() {
