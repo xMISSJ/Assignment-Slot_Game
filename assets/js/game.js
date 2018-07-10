@@ -15,7 +15,7 @@ function preload() {
   game.load.image('Numbers_Top', 'assets/number-button.png')
   game.load.image('Reel_Background', 'assets/reel-bg.png')
   game.load.image('Reel_Overlay', 'assets/reel-overlay.png')
-  game.load.image('Slotmachine', 'assets/slotmachine.png')
+  game.load.image('Slotmachine', 'assets/slotmachine-transparent.png')
   game.load.image('Slots_7', 'assets/slots-7.png')
   game.load.image('Slots_10', 'assets/slots-10.png')
   game.load.image('Slots_Bar', 'assets/slots-bar.png')
