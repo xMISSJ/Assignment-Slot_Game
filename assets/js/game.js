@@ -3,7 +3,7 @@ var game = new Phaser.Game(750, 450, Phaser.AUTO, '', { preload: preload, create
 
 var sprite;
 var slotmachine;
-var spinButton;
+var spinButton, spinStart;
 var reelBackground1, reelBackground2, reelBackground3, reelBackground4;
 var reelOverlay1, reelOverlay2, reelOverlay3, reelOverlay4;
 var linesNumber, totalBetNumber;
@@ -59,7 +59,11 @@ function create() {
 
   linesNumber = game.add.image(198, 388, 'Lines_Number');
   totalBetNumber = game.add.image(241.5, 388, 'Total_Bet_Number');
-  spinButton = game.add.button(481, 366, 'Spin_Button', actionOnClick);
+
+  spinStart = game.add.image(460, 315, 'Start_Spinning');
+  spinStart.visible = false;
+
+  spinButton = game.add.button(481, 366, 'Spin_Button', this, 0, 1, 0);
 
   // Takes the first sprite from the spritesheet.
   sprite = game.add.sprite(376.5, 388, 'Numbers_Spritesheet');
@@ -81,17 +85,20 @@ function create() {
   linesNumber.scale.setTo(0.7, 0.7);
   totalBetNumber.scale.setTo(0.7, 0.7);
   sprite.scale.setTo(0.7, 0.7);
+
   spinButton.scale.setTo(0.611, 0.611);
+  spinStart.scale.setTo(0.6, 0.6);
 }
 // Executed per frame.
 function update() {
 
 }
 
-function actionOnOver(){
+function actionOnOver() {
   // Shows start spinning pop-up.
+  spinStart.visible = true;
 }
 
-function actionOnClick(){
+function actionOnClick() {
   // Start slotmachine.
 }
