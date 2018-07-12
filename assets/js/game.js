@@ -1,6 +1,13 @@
 // Initiate the Phaser framework.
 var game = new Phaser.Game(750, 450, Phaser.AUTO, '', { preload: preload, create: create, update, update });
 
+var sprite;
+var slotmachine;
+var spinButton;
+var reelBackground1, reelBackground2, reelBackground3, reelBackground4;
+var reelOverlay1, reelOverlay2, reelOverlay3, reelOverlay4;
+var linesNumber, totalBetNumber;
+
 // Load the game assets before the game starts.
 function preload() {
   game.load.image('Background', 'assets/bg.jpg');
@@ -38,18 +45,24 @@ function preload() {
 function create() {
   game.add.image(0, 0, 'Background');
 
-  var slotmachine = game.add.image(155, 12, 'Slotmachine');
+  slotmachine = game.add.image(155, 12, 'Slotmachine');
 
-  var reelBackground1 = game.add.image(200, 167, 'Reel_Background');
-  var reelBackground2 = game.add.image(294, 167, 'Reel_Background');
-  var reelBackground3 = game.add.image(389, 167, 'Reel_Background');
-  var reelBackground4 = game.add.image(488, 167, 'Reel_Background');
+  reelBackground1 = game.add.image(200, 167, 'Reel_Background');
+  reelBackground2 = game.add.image(294, 167, 'Reel_Background');
+  reelBackground3 = game.add.image(389, 167, 'Reel_Background');
+  reelBackground4 = game.add.image(488, 167, 'Reel_Background');
 
-  var linesNumber = game.add.image(198, 388, 'Lines_Number');
-  var totalBetNumber = game.add.image(241.5, 388, 'Total_Bet_Number');
+  reelOverlay1 = game.add.image(205.3, 172, 'Reel_Overlay');
+  reelOverlay2 = game.add.image(299.3, 172, 'Reel_Overlay');
+  reelOverlay3 = game.add.image(394.3, 172, 'Reel_Overlay');
+  reelOverlay4 = game.add.image(493.3, 172, 'Reel_Overlay');
+
+  linesNumber = game.add.image(198, 388, 'Lines_Number');
+  totalBetNumber = game.add.image(241.5, 388, 'Total_Bet_Number');
+  spinButton = game.add.button(481, 366, 'Spin_Button', actionOnClick);
 
   // Takes the first sprite from the spritesheet.
-  var sprite = game.add.sprite(376.5, 388, 'Numbers_Spritesheet');
+  sprite = game.add.sprite(376.5, 388, 'Numbers_Spritesheet');
   sprite.frame = 0;
 
   // Scales the images down.
@@ -60,11 +73,25 @@ function create() {
   reelBackground3.scale.setTo(0.59, 0.59);
   reelBackground4.scale.setTo(0.59, 0.59);
 
+  reelOverlay1.scale.setTo(0.5898, 0.5898);
+  reelOverlay2.scale.setTo(0.5898, 0.5898);
+  reelOverlay3.scale.setTo(0.5898, 0.5898);
+  reelOverlay4.scale.setTo(0.5898, 0.5898);
+
   linesNumber.scale.setTo(0.7, 0.7);
   totalBetNumber.scale.setTo(0.7, 0.7);
   sprite.scale.setTo(0.7, 0.7);
+  spinButton.scale.setTo(0.611, 0.611);
 }
 // Executed per frame.
 function update() {
 
+}
+
+function actionOnOver(){
+  // Shows start spinning pop-up.
+}
+
+function actionOnClick(){
+  // Start slotmachine.
 }
