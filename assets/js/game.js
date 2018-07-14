@@ -1,13 +1,6 @@
 // Initiate the Phaser framework.
 var game = new Phaser.Game(750, 450, Phaser.AUTO, '', { preload: preload, create: create, update, update });
 
-var sprite;
-var slotmachine;
-var spinButton, spinButtonGlow, spinStart;
-var reelBackground1, reelBackground2, reelBackground3, reelBackground4;
-var reelOverlay1, reelOverlay2, reelOverlay3, reelOverlay4;
-var linesNumber, totalBetNumber;
-
 // Load the game assets before the game starts.
 function preload() {
   game.load.image('Background', 'assets/bg.jpg');
@@ -41,6 +34,14 @@ function preload() {
 
   game.load.spritesheet('Numbers_Spritesheet', 'assets/red-numbers-sprite.png', 11, 22, 11);
 }
+
+var sprite;
+var slotmachine;
+var spinButton, spinButtonGlow, spinStart;
+var reelBackground1, reelBackground2, reelBackground3, reelBackground4;
+var reelOverlay1, reelOverlay2, reelOverlay3, reelOverlay4;
+var linesNumber, totalBetNumber;
+
 // Executed after everything is loaded.
 function create() {
   game.add.image(0, 0, 'Background');
@@ -63,7 +64,9 @@ function create() {
   spinStart = game.add.image(460, 315, 'Start_Spinning');
   spinStart.visible = false;
 
-  spinButton = game.add.button(481, 366, 'Spin_Button', actionOnClick, this, 0, 1, 0);
+  spinButton = game.add.button(481, 366, 'Spin_Button', actionOnUp, this, 2, 1, 0);
+  spinButton.onInputOver.add(actionOnOver, this);
+  spinButton.onInputOut.add(actionOnOut, this);
 
   spinButtonGlow = game.add.image(481, 366, 'Spin_Button_Lighter');
   spinButtonGlow.visible = false;
@@ -95,14 +98,23 @@ function create() {
 }
 // Executed per frame.
 function update() {
-
 }
 
+function actionOnUp(button, pointer, onClick) {
+  // If the button is re-pressed, the action will be canceled so the spinButtonGlow disappears.
+    if (onClick) {
+        spinStart.visible = !spinStart.visible;
+        spinButtonGlow.visible = !spinButtonGlow.visible;
+    }
+}
+ 
 function actionOnOver() {
-  // Shows start spinning pop-up.
-  spinStart.visible = true;
+    spinStart.visible = false;
+    if(!spinButtonGlow.visible) {
+        spinStart.visible = true;
+    }
 }
-
-function actionOnClick() {
-  spinButtonGlow.visible = true;
+ 
+function actionOnOut() {
+    spinStart.visible = false;
 }
