@@ -8,7 +8,7 @@ function preload() {
     game.load.image('Background_Overlay', 'assets/dark-bg-overlay.png');
     game.load.image('Big_Win', 'assets/big-win.png');
     game.load.image('Coin_Animation', 'assets/coin-animation.png');
-    game.load.image('Cursor', 'assets/mousehand.png');
+    game.load.image('Mouse_Hand', 'assets/mousehand.png');
     game.load.image('Huge_Win', 'assets/huge-win.png');
     game.load.image('Install_Button', 'assets/install-btn.png');
     game.load.image('Lines_Number', 'assets/lines-number.png');
@@ -38,7 +38,7 @@ function preload() {
 var sprite;
 var slotmachine;
 var speed, maxUp, maxDown, upDownTimer;
-var spinButton, spinButtonGlow, spinStart;
+var spinButton, spinButtonGlow, spinStart, mouseHand;
 var reelBackground1, reelBackground2, reelBackground3, reelBackground4;
 var reelOverlay1, reelOverlay2, reelOverlay3, reelOverlay4;
 var linesNumber, totalBetNumber;
@@ -46,7 +46,7 @@ var linesNumber, totalBetNumber;
 // Executed after everything is loaded.
 function create() {
 
-    speed = 7;
+    speed = 15;
     maxUp = 320;
     maxDown = 325;
 
@@ -83,11 +83,12 @@ function create() {
     // Enables the Physics System for spinStart.
     game.physics.enable(spinStart, Phaser.Physics.ARCARDE);
 
-    updateUp();
-
     // Takes the first sprite from the spritesheet.
     sprite = game.add.sprite(376.5, 388, 'Numbers_Spritesheet');
     sprite.frame = 0;
+
+    mouseHand = game.add.image(545, 390, 'Mouse_Hand');
+    mouseHand.visible = true;
 
     // Scales the images down.
     slotmachine.scale.setTo(0.62, 0.62);
@@ -109,14 +110,16 @@ function create() {
     spinButton.scale.setTo(0.611, 0.611);
     spinButtonGlow.scale.setTo(0.611, 0.611);
     spinStart.scale.setTo(0.6, 0.6);
+
+    mouseHand.scale.setTo(0.6, 0.6);
 }
 // Executed per frame.
 function update() {
     if (spinStart.body.position.y <= maxUp) {
-        updateDown();
+        spinStart.body.velocity.y = speed;
     }
     else if (spinStart.body.position.y >= maxDown) {
-        updateUp();
+        spinStart.body.velocity.y = -speed;
     }
 }
 
@@ -125,6 +128,7 @@ function actionOnUp(button, pointer, onClick) {
     if (onClick) {
         spinStart.visible = !spinStart.visible;
         spinButtonGlow.visible = !spinButtonGlow.visible;
+        mouseHand.visible = !mouseHand.visible;
     }
 }
 
@@ -136,14 +140,4 @@ function actionOnOver() {
 }
 
 function actionOnOut() {
-}
-
-// Decreases velocity for spinStart.
-function updateUp() {
-    spinStart.body.velocity.y -= 1 * speed;
-}
-
-// Increases velocity for spinStart.
-function updateDown() {
-    spinStart.body.velocity.y += 1 * speed;
 }
