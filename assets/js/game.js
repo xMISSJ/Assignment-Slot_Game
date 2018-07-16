@@ -16,8 +16,6 @@ function preload() {
     game.load.image('Reel_Background', 'assets/reel-bg.png');
     game.load.image('Reel_Overlay', 'assets/reel-overlay.png');
     game.load.image('Slotmachine', 'assets/slotmachine-transparant.png');
-    game.load.image('Slots_7', 'assets/slots-7.png');
-    game.load.image('Slots_10', 'assets/slots-10.png');
     game.load.image('Slots_Bar', 'assets/slots-bar.png');
     game.load.image('Slots_Bar_Lighter', 'assets/slots-bar-lighter.png');
     game.load.image('Slots_Crown', 'assets/slots-crown.png');
@@ -25,6 +23,8 @@ function preload() {
     game.load.image('Slots_Diamond_Lighter', 'assets/slots-diamond-lighter.png');
     game.load.image('Slots_Lemon', 'assets/slots-lemon.png');
     game.load.image('Slots_Melon', 'assets/slots-watermelon.png');
+    game.load.image('Slots_Seven', 'assets/slots-7.png');
+    game.load.image('Slots_Ten', 'assets/slots-10.png');
     game.load.image('Spin_Button', 'assets/spin-btn.png');
     game.load.image('Spin_Button_Lighter', 'assets/spin-btn-glow.png');
     game.load.image('Start_Spinning', 'assets/start-spinning.png');
@@ -37,6 +37,8 @@ function preload() {
 
 var sprite;
 var slotmachine;
+var slotValues, counter;
+var slotsSeven, slotsTen, slotsBar, slotsDiamond, slotsLemon, slotsWatermelon, slotsCrown;
 var speed, maxUp, maxDown, upDownTimer;
 var spinButton, spinButtonGlow, spinStart, mouseHand;
 var reelBackground1, reelBackground2, reelBackground3, reelBackground4;
@@ -57,15 +59,27 @@ function create() {
 
     slotmachine = game.add.image(155, 12, 'Slotmachine');
 
-    reelBackground1 = game.add.image(200, 167, 'Reel_Background');
-    reelBackground2 = game.add.image(294, 167, 'Reel_Background');
-    reelBackground3 = game.add.image(389, 167, 'Reel_Background');
-    reelBackground4 = game.add.image(488, 167, 'Reel_Background');
+    // Adds images of the slots.
+    slotsBar = game.add.image(200, 50, 'Slots_Bar');
+    slotsCrown = game.add.image(200, 50, 'Slots_Crown');
+    slotsDiamond = game.add.image(200, 50, 'Slots_Diamond');
+    slotsLemon = game.add.image(200, 50, 'Slots_Lemon');
+    slotsSeven = game.add.image(200, 50, 'Slots_Seven');
+    slotsTen = game.add.image(200, 50, 'Slots_Ten');
 
+    slotValues[[],[]];
+
+    // Adds the reel background.
+    reelBackground1 = game.add.image(200, 167, 'Reel_Background');
+    reelBackground2 = game.add.image(0, 0, 'Reel_Background').alignTo(reelBackground1, Phaser.RIGHT_CENTER, -18);
+    reelBackground3 = game.add.image(0, 0, 'Reel_Background').alignTo(reelBackground2, Phaser.RIGHT_CENTER, -17);
+    reelBackground4 = game.add.image(0, 0, 'Reel_Background').alignTo(reelBackground3, Phaser.RIGHT_CENTER, -13);
+
+    // Adds the greyish reel overlay.
     reelOverlay1 = game.add.image(205.3, 172, 'Reel_Overlay');
-    reelOverlay2 = game.add.image(299.3, 172, 'Reel_Overlay');
-    reelOverlay3 = game.add.image(394.3, 172, 'Reel_Overlay');
-    reelOverlay4 = game.add.image(493.3, 172, 'Reel_Overlay');
+    reelOverlay2 = game.add.image(0, 0, 'Reel_Overlay').alignTo(reelOverlay1, Phaser.RIGHT_CENTER, 0);
+    reelOverlay3 = game.add.image(0, 0, 'Reel_Overlay').alignTo(reelOverlay2, Phaser.RIGHT_CENTER, 1);
+    reelOverlay4 = game.add.image(0, 0, 'Reel_Overlay').alignTo(reelOverlay3, Phaser.RIGHT_CENTER, 5);
 
     linesNumber = game.add.image(198, 388, 'Lines_Number');
     totalBetNumber = game.add.image(241.5, 388, 'Total_Bet_Number');
@@ -90,7 +104,7 @@ function create() {
     mouseHand = game.add.image(545, 390, 'Mouse_Hand');
     mouseHand.visible = true;
 
-    // Scales the images down.
+    // Scales images down.
     slotmachine.scale.setTo(0.62, 0.62);
 
     reelBackground1.scale.setTo(0.59, 0.59);
