@@ -22,7 +22,7 @@ function preload() {
     game.load.image('Slots_Diamond', 'assets/slots-diamond.png');
     game.load.image('Slots_Diamond_Lighter', 'assets/slots-diamond-lighter.png');
     game.load.image('Slots_Lemon', 'assets/slots-lemon.png');
-    game.load.image('Slots_Melon', 'assets/slots-watermelon.png');
+    game.load.image('Slots_Watermelon', 'assets/slots-watermelon.png');
     game.load.image('Slots_Seven', 'assets/slots-7.png');
     game.load.image('Slots_Ten', 'assets/slots-10.png');
     game.load.image('Spin_Button', 'assets/spin-btn.png');
@@ -59,21 +59,20 @@ function create() {
 
     slotmachine = game.add.image(155, 12, 'Slotmachine');
 
-    // Adds images of the slots.
-    slotsBar = game.add.image(200, 50, 'Slots_Bar');
-    slotsCrown = game.add.image(200, 50, 'Slots_Crown');
-    slotsDiamond = game.add.image(200, 50, 'Slots_Diamond');
-    slotsLemon = game.add.image(200, 50, 'Slots_Lemon');
-    slotsSeven = game.add.image(200, 50, 'Slots_Seven');
-    slotsTen = game.add.image(200, 50, 'Slots_Ten');
-
-    slotValues[[],[]];
-
     // Adds the reel background.
     reelBackground1 = game.add.image(200, 167, 'Reel_Background');
     reelBackground2 = game.add.image(0, 0, 'Reel_Background').alignTo(reelBackground1, Phaser.RIGHT_CENTER, -18);
     reelBackground3 = game.add.image(0, 0, 'Reel_Background').alignTo(reelBackground2, Phaser.RIGHT_CENTER, -17);
     reelBackground4 = game.add.image(0, 0, 'Reel_Background').alignTo(reelBackground3, Phaser.RIGHT_CENTER, -13);
+
+    // Adds images of the slots.
+    slotsCrown = game.add.image(207, -6, 'Slots_Crown')
+    slotsSeven = game.add.image(0, 0, 'Slots_Seven').alignTo(slotsCrown, Phaser.BOTTOM_CENTER, 0, -27);
+    slotsTen = game.add.image(0, 0, 'Slots_Ten').alignTo(slotsSeven, Phaser.BOTTOM_CENTER, 0, -27);
+    slotsBar = game.add.image(0, 0, 'Slots_Bar').alignTo(slotsTen, Phaser.BOTTOM_CENTER, 0, -27);
+    slotsWatermelon = game.add.image(0, 0, 'Slots_Watermelon').alignTo(slotsBar, Phaser.BOTTOM_CENTER, 0, -27);
+    slotsLemon = game.add.image(0, 0, 'Slots_Lemon').alignTo(slotsWatermelon, Phaser.BOTTOM_CENTER, 0, -27);
+    slotsDiamond = game.add.image(0, 0, 'Slots_Diamond').alignTo(slotsLemon, Phaser.BOTTOM_CENTER, 0, -27);
 
     // Adds the greyish reel overlay.
     reelOverlay1 = game.add.image(205.3, 172, 'Reel_Overlay');
@@ -107,11 +106,22 @@ function create() {
     // Scales images down.
     slotmachine.scale.setTo(0.62, 0.62);
 
+    // Reel backgrounds.
     reelBackground1.scale.setTo(0.59, 0.59);
     reelBackground2.scale.setTo(0.59, 0.59);
     reelBackground3.scale.setTo(0.59, 0.59);
     reelBackground4.scale.setTo(0.59, 0.59);
 
+    // Slots images.
+    slotsBar.scale.setTo(0.6, 0.6);
+    slotsCrown.scale.setTo(0.6, 0.6);
+    slotsDiamond.scale.setTo(0.6, 0.6);
+    slotsLemon.scale.setTo(0.6, 0.6);
+    slotsSeven.scale.setTo(0.6, 0.6);
+    slotsTen.scale.setTo(0.6, 0.6);
+    slotsWatermelon.scale.setTo(0.6, 0.6);
+
+    // Reel overlays.
     reelOverlay1.scale.setTo(0.5898, 0.5898);
     reelOverlay2.scale.setTo(0.5898, 0.5898);
     reelOverlay3.scale.setTo(0.5898, 0.5898);
