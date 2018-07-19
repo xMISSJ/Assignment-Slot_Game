@@ -84,7 +84,6 @@ function create() {
     totalBetNumber = game.add.image(241.5, 388, 'Total_Bet_Number');
 
     spinButton = game.add.button(481, 366, 'Spin_Button', actionOnUp, this, 2, 1, 0);
-    spinButton.onInputOver.add(actionOnOver, this);
     spinButton.onInputOut.add(actionOnOut, this);
 
     spinButtonGlow = game.add.image(481, 366, 'Spin_Button_Lighter');
@@ -147,21 +146,16 @@ function update() {
     }
 }
 
-function actionOnUp(button, pointer, onClick) {
-    // If the button is re-pressed, the action will be canceled so the spinButtonGlow disappears and spinStart won't pop up.
+function actionOnUp(onClick) {
     if (onClick) {
-        spinStart.visible = !spinStart.visible;
         spinButtonGlow.visible = !spinButtonGlow.visible;
-        mouseHand.visible = !mouseHand.visible;
-    }
-}
-
-function actionOnOver() {
-    spinStart.visible = false;
-    if (!spinButtonGlow.visible) {
-        spinStart.visible = true;
+    } 
+    if (spinButtonGlow.visible){
+        spinStart.visible = false;
+        mouseHand.visible = false;
     }
 }
 
 function actionOnOut() {
+    spinStart.visible = false;
 }
