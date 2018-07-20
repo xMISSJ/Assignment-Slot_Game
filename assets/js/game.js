@@ -57,8 +57,6 @@ function create() {
 
     game.add.image(0, 0, 'Background');
 
-    slotmachine = new Array();
-
     slotmachineBackground = game.add.image(155, 12, 'Slotmachine');
 
     // Adds the reel background.
@@ -67,22 +65,31 @@ function create() {
     reelBackground3 = game.add.image(0, 0, 'Reel_Background').alignTo(reelBackground2, Phaser.RIGHT_CENTER, -17);
     reelBackground4 = game.add.image(0, 0, 'Reel_Background').alignTo(reelBackground3, Phaser.RIGHT_CENTER, -13);
 
+    // Create new JSON object.
+    slotmachine = new Object();
+
 
     // Initializing slots.
     for (let reel = 0; reel < 4; reel++) {
+
+        // Creates array in the JSON object.
         slotmachine[reel] = new Array();
+
         // Shows three slots for each reel.
         for (let slot = 0; slot < 3; slot++) {
+
             // Puts random selected slot.
             image = slotSelection();
+
             game.physics.enable(image, Phaser.Physics.ARCADE);
             image.body.velocity.y += speed * 5;
+
             if (slot != 0) {
                 // Aligns to the previous slot in the reel.
                 image.alignTo(slotmachine[reel][slot - 1], Phaser.BOTTOM_CENTER, 0, 5);
             }
 
-            // Position slot to the correct wheel.
+            // Positions slot to the correct wheel.
             switch (reel) {
                 case 0:
                     image.position.x = 207;
@@ -154,6 +161,7 @@ function create() {
 
     mouseHand.scale.setTo(0.6, 0.6);
 }
+
 // Executed per frame.
 function update() {
     if (spinStart.body.position.y <= maxUp) {
@@ -163,24 +171,40 @@ function update() {
         spinStart.body.velocity.y = -speed;
     }
 
-    //console.log(image.body.position.y);
-    if (image.body.position.y >= 330 <= 333){
-        for(let i = 0; i < 4; i++){
-            console.log(slotmachine[i, 0].unshift());
+    for (let reel = 0; reel < 4; reel++) {
+        //console.log(slotmachine[i][2].body.position.y);
+        if (slotmachine[reel][2].position.y >= 330) {
+        
+            // Destroys the last row of slot images.
+            slotmachine[reel][2].destroy();
+
+            // Removes the last row of slot images.
+            slotmachine[reel].pop();
+
+            // Adds new slot images with the slotSelection() function.
+            slotmachine[reel].unshift(slotSelection());
+
+            // Positions the last row of slots of slotmachine[reel] to the first row.
+            switch (reel) {
+                case 0:
+                    slotmachine[reel][0].position.x = 207;
+                    slotmachine[reel][0].body.velocity.y += speed * 5;
+                    break;
+                case 1:
+                    slotmachine[reel][0].position.x = 301;
+                    slotmachine[reel][0].body.velocity.y += speed * 5;
+                    break;
+                case 2:
+                    slotmachine[reel][0].position.x = 395.5;
+                    slotmachine[reel][0].body.velocity.y += speed * 5;
+                    break;
+                case 3:
+                    slotmachine[reel][0].position.x = 495;
+                    slotmachine[reel][0].body.velocity.y += speed * 5;
+                    break;
+            }
         }
-
     }
-
-    // if (image.body.position.y == 331.19) {
-    //     for (let i = 0; i < 4; i++) {
-    //         for (let j = 0; i < 3; j++) {
-    //             //console.log(slotmachine.pop([i, 2]));
-    //             //console.log(slotmachine[i, 0].push());
-    //             //slotmachine[i, 2].pop();
-    //             slotmachine[i][j].pop(3);
-    //         }
-    //     }
-    // }
 }
 
 function actionOnUp(onClick) {
@@ -196,6 +220,7 @@ function actionOnUp(onClick) {
 function slotSelection(type) {
 
     let image;
+
     if (!type) {
         type = Math.floor(Math.random() * 6);
     }
