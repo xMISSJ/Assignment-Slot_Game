@@ -156,7 +156,6 @@ function create() {
 }
 // Executed per frame.
 function update() {
-    console.log(image.body.position.y);
     if (spinStart.body.position.y <= maxUp) {
         spinStart.body.velocity.y = speed;
     }
@@ -164,15 +163,24 @@ function update() {
         spinStart.body.velocity.y = -speed;
     }
 
-    if (image.body.position.y >= 330) {
-        for (let i = 0; i < 4; i++) {
-            for (let j = 0; i < 3; j++) {
-                //console.log(slotmachine.pop([i, 2]));
-                //console.log(slotmachine[i, 0].push());
-                // slotmachine[i][j].pop(3);
-            }
+    //console.log(image.body.position.y);
+    if (image.body.position.y >= 330 <= 333){
+        for(let i = 0; i < 4; i++){
+            console.log(slotmachine[i, 0].unshift());
         }
+
     }
+
+    // if (image.body.position.y == 331.19) {
+    //     for (let i = 0; i < 4; i++) {
+    //         for (let j = 0; i < 3; j++) {
+    //             //console.log(slotmachine.pop([i, 2]));
+    //             //console.log(slotmachine[i, 0].push());
+    //             //slotmachine[i, 2].pop();
+    //             slotmachine[i][j].pop(3);
+    //         }
+    //     }
+    // }
 }
 
 function actionOnUp(onClick) {
