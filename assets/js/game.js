@@ -36,14 +36,15 @@ function preload() {
     game.load.spritesheet('Numbers_Spritesheet', 'assets/red-numbers-sprite.png', 11, 22, 11);
 }
 
-let image;
-let sprite;
 let layers;
+let image, sprite;
 let background, layer;
-let slotmachine, slots;
-let linesNumber, totalBetNumber;
 let slotmachineBackground;
-let speed, maxUp, maxDown, upDownTimer;
+let startMachine, firstPhase;
+let linesNumber, totalBetNumber;
+let slotmachineActivated;
+let slotmachine, slots, scrollSpeed;
+let spinStartSpeed, maxUp, maxDown, upDownTimer;
 let spinButton, spinButtonGlow, spinStart, mouseHand;
 let reelBorder1, reelBorder2, reelBorder3, reelBorder4;
 let reelOverlay1, reelOverlay2, reelOverlay3, reelOverlay4;
@@ -52,13 +53,21 @@ let reelBackground1, reelBackground2, reelBackground3, reelBackground4;
 // Executed after everything is loaded.
 function create() {
 
-    speed = 15;
+    slotmachineStart = false;
+
+    // Slots scroll speed.
+    scrollSpeed = 500;
+
+    // Up-down-movement speed of "Start Spinning"-image.
+    spinStartSpeed = 15;
+
     maxUp = 320;
     maxDown = 325;
 
     // Physics System.
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
+    // Creates layers and adds a group to each. The groups are ordered from lowest to highest.
     backgroundLayer = game.add.group();
     reelBackgroundLayer = game.add.group();
     slotsLayer = game.add.group();
@@ -88,46 +97,7 @@ function create() {
 
     // Create new JSON object.
     slotmachine = new Object();
-
-    // Initializing slots.
-    for (let reel = 0; reel < 4; reel++) {
-
-        // Creates array in the JSON object.
-        slotmachine[reel] = new Array();
-
-        // Shows three slots for each reel.
-        for (let slot = 0; slot < 4; slot++) {
-
-            // Puts random selected slot.
-            image = slotSelection();
-
-            game.physics.enable(image, Phaser.Physics.ARCADE);
-            image.body.velocity.y += speed;
-
-            if (slot != 0) {
-                // Aligns to the previous slot in the reel.
-                image.alignTo(slotmachine[reel][slot - 1], Phaser.BOTTOM_CENTER, 0, 7);
-            }
-
-            // Positions slot to the correct reel.
-            switch (reel) {
-                case 0:
-                    image.position.x = 208;
-                    break;
-                case 1:
-                    image.position.x = 302;
-                    break;
-                case 2:
-                    image.position.x = 398;
-                    break;
-                case 3:
-                    image.position.x = 494;
-                    break;
-            }
-
-            slotmachine[reel][slot] = image;
-        }
-    }
+    startSlotmachine();
 
     //Adds the greyish reel overlay.
     reelOverlay1 = game.add.image(204.8, 171, 'Reel_Overlay');
@@ -204,63 +174,35 @@ function create() {
 // Executed per frame.
 function update() {
     if (spinStart.body.position.y <= maxUp) {
-        spinStart.body.velocity.y = speed;
+        spinStart.body.velocity.y = spinStartSpeed;
+    } else if (spinStart.body.position.y >= maxDown) {
+        spinStart.body.velocity.y = -spinStartSpeed;
     }
-    else if (spinStart.body.position.y >= maxDown) {
-        spinStart.body.velocity.y = -speed;
-    }
 
-    for (let reel = 0; reel < 4; reel++) {
-        //console.log(slotmachine[i][2].body.position.y);
-        if (slotmachine[reel][3].position.y >= 330) {
-
-            // Destroys the last row of slot images.
-            slotmachine[reel][3].destroy();
-
-            // Removes the last row of slot images.
-            slotmachine[reel].pop();
-
-            slotmachine[reel].unshift(slotSelection());
-
-            game.physics.arcade.enable(slotmachine[reel][0]);
-
-            // Positions the last row of slots of slotmachine[reel] to the first row.
-            switch (reel) {
-
-                case 0:
-                    slotmachine[reel][0].position.x = 208;
-                    slotmachine[reel][0].body.velocity.y += speed;
-                    break;
-                case 1:
-                    slotmachine[reel][0].position.x = 302;
-                    slotmachine[reel][0].body.velocity.y += speed;
-                    break;
-                case 2:
-                    slotmachine[reel][0].position.x = 398;
-                    slotmachine[reel][0].body.velocity.y += speed;
-                    break;
-                case 3:
-                    slotmachine[reel][0].position.x = 494;
-                    slotmachine[reel][0].body.velocity.y += speed;
-                    break;
-            }
-        }
+    // If the slotmachine has already been activated
+    if (slotmachineActivated) {
+        slotsIllusion();
     }
 }
 
 function actionOnUp(onClick) {
     // If the button is re-pressed, the action will be canceled so the spinButtonGlow disappears and spinStart won't pop up.
-    if (onClick) {
+    if (onClick && !slotmachineActivated) {
         spinStart.visible = false;
         spinButtonGlow.visible = !spinButtonGlow.visible;
         mouseHand.visible = false;
+        slotmachineActivated = true;
+
+        for (let reel = 0; reel < 4; reel++)
+            for (let slot = 0; slot < 4; slot++)
+                slotmachine[reel][slot].body.velocity.y = scrollSpeed;
     }
 }
 
 // If type is not defined, a random slot will be chosen
 function slotSelection(type) {
 
-    image;
+    let image;
 
     if (!type) {
         type = Math.floor(Math.random() * 6);
@@ -295,4 +237,81 @@ function slotSelection(type) {
     slotsLayer.add(image);
 
     return image;
+}
+
+function startSlotmachine() {
+    // Initializing slots.
+    for (let reel = 0; reel < 4; reel++) {
+
+        // Creates array in the JSON object.
+        slotmachine[reel] = new Array();
+
+        // Shows three slots for each reel.
+        for (let slot = 0; slot < 4; slot++) {
+
+            // Puts random selected slot.
+            image = slotSelection();
+
+            game.physics.enable(image, Phaser.Physics.ARCADE);
+
+            if (slot != 0) {
+                // Aligns to the previous slot in the reel.
+                image.alignTo(slotmachine[reel][slot - 1], Phaser.BOTTOM_CENTER, 0, 7);
+            }
+
+            // Positions slot to the correct reel.
+            switch (reel) {
+                case 0:
+                    image.position.x = 208;
+                    break;
+                case 1:
+                    image.position.x = 302;
+                    break;
+                case 2:
+                    image.position.x = 398;
+                    break;
+                case 3:
+                    image.position.x = 494;
+                    break;
+            }
+
+            slotmachine[reel][slot] = image;
+        }
+    }
+}
+
+function slotsIllusion() {
+    for (let reel = 0; reel < 4; reel++) {
+        //console.log(slotmachine[i][2].body.position.y);
+        if (slotmachine[reel][3].position.y >= 335) {
+
+            // Destroys the last row of slot images.
+            slotmachine[reel][3].destroy();
+
+            // Removes the last row of slot images.
+            slotmachine[reel].pop();
+
+            slotmachine[reel].unshift(slotSelection());
+
+            game.physics.arcade.enable(slotmachine[reel][0]);
+
+            // Positions the last row of slots of slotmachine[reel] to the first row.
+            switch (reel) {
+                case 0:
+                    slotmachine[reel][0].position.x = 208;
+                    break;
+                case 1:
+                    slotmachine[reel][0].position.x = 302;
+                    break;
+                case 2:
+                    slotmachine[reel][0].position.x = 398;
+                    break;
+                case 3:
+                    slotmachine[reel][0].position.x = 494;
+                    break;
+            }
+
+            slotmachine[reel][0].body.velocity.y = scrollSpeed;
+        }
+    }
 }
