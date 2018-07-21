@@ -193,6 +193,7 @@ function actionOnUp(onClick) {
         mouseHand.visible = false;
         slotmachineActivated = true;
 
+        // Adds y-velocity to every slot in every reel on click.
         for (let reel = 0; reel < 4; reel++)
             for (let slot = 0; slot < 4; slot++)
                 slotmachine[reel][slot].body.velocity.y = scrollSpeed;
