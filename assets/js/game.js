@@ -14,8 +14,9 @@ function preload() {
     game.load.image('Lines_Number', 'assets/lines-number.png');
     game.load.image('Numbers_Top', 'assets/number-button.png');
     game.load.image('Reel_Background', 'assets/reel-bg.png');
+    game.load.image('Reel_Border', 'assets/reel-border.png');
     game.load.image('Reel_Overlay', 'assets/reel-overlay.png');
-    game.load.image('Slotmachine', 'assets/slotmachine-transparant.png');
+    game.load.image('Slotmachine', 'assets/slotmachine-transparant2.png');
     game.load.image('Slots_Bar', 'assets/slots-bar.png');
     game.load.image('Slots_Bar_Lighter', 'assets/slots-bar-lighter.png');
     game.load.image('Slots_Crown', 'assets/slots-crown.png');
@@ -35,13 +36,16 @@ function preload() {
     game.load.spritesheet('Numbers_Spritesheet', 'assets/red-numbers-sprite.png', 11, 22, 11);
 }
 
-let sprite;
 let image;
+let sprite;
+let layers;
+let background, layer;
 let slotmachine, slots;
-let slotmachineBackground;
 let linesNumber, totalBetNumber;
+let slotmachineBackground;
 let speed, maxUp, maxDown, upDownTimer;
 let spinButton, spinButtonGlow, spinStart, mouseHand;
+let reelBorder1, reelBorder2, reelBorder3, reelBorder4;
 let reelOverlay1, reelOverlay2, reelOverlay3, reelOverlay4;
 let reelBackground1, reelBackground2, reelBackground3, reelBackground4;
 
@@ -55,19 +59,35 @@ function create() {
     // Physics System.
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
-    game.add.image(0, 0, 'Background');
+    backgroundLayer = game.add.group();
+    reelBackgroundLayer = game.add.group();
+    slotsLayer = game.add.group();
+    reelOverlayLayer = game.add.group();
+    slotmachineLayer = game.add.group();
+    reelBorderLayer = game.add.group();
+    interactionLayer = game.add.group();
 
-    slotmachineBackground = game.add.image(155, 12, 'Slotmachine');
+    background = game.add.image(0, 0, 'Background');
+    backgroundLayer.add(background);
 
     // Adds the reel background.
-    reelBackground1 = game.add.image(200, 167, 'Reel_Background');
+    reelBackground1 = game.add.image(195, 160, 'Reel_Background');
     reelBackground2 = game.add.image(0, 0, 'Reel_Background').alignTo(reelBackground1, Phaser.RIGHT_CENTER, -18);
     reelBackground3 = game.add.image(0, 0, 'Reel_Background').alignTo(reelBackground2, Phaser.RIGHT_CENTER, -17);
     reelBackground4 = game.add.image(0, 0, 'Reel_Background').alignTo(reelBackground3, Phaser.RIGHT_CENTER, -13);
 
+    reelBackground1.scale.setTo(0.70, 0.70);
+    reelBackground2.scale.setTo(0.70, 0.70);
+    reelBackground3.scale.setTo(0.70, 0.70);
+    reelBackground4.scale.setTo(0.70, 0.70);
+
+    reelBackgroundLayer.add(reelBackground1);
+    reelBackgroundLayer.add(reelBackground2);
+    reelBackgroundLayer.add(reelBackground3);
+    reelBackgroundLayer.add(reelBackground4);
+
     // Create new JSON object.
     slotmachine = new Object();
-
 
     // Initializing slots.
     for (let reel = 0; reel < 4; reel++) {
@@ -76,32 +96,32 @@ function create() {
         slotmachine[reel] = new Array();
 
         // Shows three slots for each reel.
-        for (let slot = 0; slot < 3; slot++) {
+        for (let slot = 0; slot < 4; slot++) {
 
             // Puts random selected slot.
             image = slotSelection();
 
             game.physics.enable(image, Phaser.Physics.ARCADE);
-            image.body.velocity.y += speed * 5;
+            image.body.velocity.y += speed;
 
             if (slot != 0) {
                 // Aligns to the previous slot in the reel.
-                image.alignTo(slotmachine[reel][slot - 1], Phaser.BOTTOM_CENTER, 0, 5);
+                image.alignTo(slotmachine[reel][slot - 1], Phaser.BOTTOM_CENTER, 0, 7);
             }
 
-            // Positions slot to the correct wheel.
+            // Positions slot to the correct reel.
             switch (reel) {
                 case 0:
-                    image.position.x = 207;
+                    image.position.x = 208;
                     break;
                 case 1:
-                    image.position.x = 301;
+                    image.position.x = 302;
                     break;
                 case 2:
-                    image.position.x = 395.5;
+                    image.position.x = 398;
                     break;
                 case 3:
-                    image.position.x = 495;
+                    image.position.x = 494;
                     break;
             }
 
@@ -109,57 +129,76 @@ function create() {
         }
     }
 
-    // Adds the greyish reel overlay.
-    reelOverlay1 = game.add.image(205.3, 172, 'Reel_Overlay');
+    //Adds the greyish reel overlay.
+    reelOverlay1 = game.add.image(204.8, 171, 'Reel_Overlay');
     reelOverlay2 = game.add.image(0, 0, 'Reel_Overlay').alignTo(reelOverlay1, Phaser.RIGHT_CENTER, 0);
-    reelOverlay3 = game.add.image(0, 0, 'Reel_Overlay').alignTo(reelOverlay2, Phaser.RIGHT_CENTER, 1);
-    reelOverlay4 = game.add.image(0, 0, 'Reel_Overlay').alignTo(reelOverlay3, Phaser.RIGHT_CENTER, 5);
+    reelOverlay3 = game.add.image(0, 0, 'Reel_Overlay').alignTo(reelOverlay2, Phaser.RIGHT_CENTER, 3);
+    reelOverlay4 = game.add.image(0, 0, 'Reel_Overlay').alignTo(reelOverlay3, Phaser.RIGHT_CENTER, 1.2);
+
+    reelOverlay1.scale.setTo(0.61, 0.61);
+    reelOverlay2.scale.setTo(0.61, 0.61);
+    reelOverlay3.scale.setTo(0.61, 0.61);
+    reelOverlay4.scale.setTo(0.61, 0.61);
+
+    reelOverlayLayer.add(reelOverlay1);
+    reelOverlayLayer.add(reelOverlay2);
+    reelOverlayLayer.add(reelOverlay3);
+    reelOverlayLayer.add(reelOverlay4);
+
+    reelBorder1 = game.add.image(200, 167, 'Reel_Border');
+    reelBorder2 = game.add.image(0, 0, 'Reel_Border').alignTo(reelBorder1, Phaser.RIGHT_CENTER, -18);
+    reelBorder3 = game.add.image(0, 0, 'Reel_Border').alignTo(reelBorder2, Phaser.RIGHT_CENTER, -15.5);
+    reelBorder4 = game.add.image(0, 0, 'Reel_Border').alignTo(reelBorder3, Phaser.RIGHT_CENTER, -16);
+
+    reelBorder1.scale.setTo(0.59, 0.60);
+    reelBorder2.scale.setTo(0.59, 0.60);
+    reelBorder3.scale.setTo(0.59, 0.60);
+    reelBorder4.scale.setTo(0.59, 0.60);
+
+    reelBorderLayer.add(reelBorder1);
+    reelBorderLayer.add(reelBorder2);
+    reelBorderLayer.add(reelBorder3);
+    reelBorderLayer.add(reelBorder4);
+
+    slotmachineBackground = game.add.image(155, 12, 'Slotmachine');
+    slotmachineBackground.scale.setTo(0.62, 0.62);
+    slotmachineLayer.add(slotmachineBackground);
 
     linesNumber = game.add.image(198, 388, 'Lines_Number');
+    linesNumber.scale.setTo(0.7, 0.7);
+    slotmachineLayer.add(linesNumber);
+
     totalBetNumber = game.add.image(241.5, 388, 'Total_Bet_Number');
+    totalBetNumber.scale.setTo(0.7, 0.7);
+    slotmachineLayer.add(totalBetNumber);
 
     spinButton = game.add.button(481, 366, 'Spin_Button', actionOnUp, this, 2, 1, 0);
+    spinButton.scale.setTo(0.611, 0.611);
+    interactionLayer.add(spinButton);
 
     spinButtonGlow = game.add.image(481, 366, 'Spin_Button_Lighter');
+    spinButtonGlow.scale.setTo(0.611, 0.611);
     spinButtonGlow.visible = false;
+    interactionLayer.add(spinButtonGlow);
 
     spinStart = game.add.sprite(460, 320, 'Start_Spinning');
+    spinStart.scale.setTo(0.6, 0.6);
     spinStart.visible = true;
+    interactionLayer.add(spinStart);
 
     // Enables the Physics System for spinStart.
     game.physics.enable(spinStart, Phaser.Physics.ARCADE);
 
     // Takes the first sprite from the spritesheet.
     sprite = game.add.sprite(376.5, 388, 'Numbers_Spritesheet');
+    sprite.scale.setTo(0.7, 0.7);
     sprite.frame = 0;
+    interactionLayer.add(sprite);
 
     mouseHand = game.add.image(545, 390, 'Mouse_Hand');
-    mouseHand.visible = true;
-
-    // Scales images down.
-    slotmachineBackground.scale.setTo(0.62, 0.62);
-
-    // Reel backgrounds.
-    reelBackground1.scale.setTo(0.59, 0.59);
-    reelBackground2.scale.setTo(0.59, 0.59);
-    reelBackground3.scale.setTo(0.59, 0.59);
-    reelBackground4.scale.setTo(0.59, 0.59);
-
-    // Reel overlays.
-    reelOverlay1.scale.setTo(0.5898, 0.5898);
-    reelOverlay2.scale.setTo(0.5898, 0.5898);
-    reelOverlay3.scale.setTo(0.5898, 0.5898);
-    reelOverlay4.scale.setTo(0.5898, 0.5898);
-
-    linesNumber.scale.setTo(0.7, 0.7);
-    totalBetNumber.scale.setTo(0.7, 0.7);
-    sprite.scale.setTo(0.7, 0.7);
-
-    spinButton.scale.setTo(0.611, 0.611);
-    spinButtonGlow.scale.setTo(0.611, 0.611);
-    spinStart.scale.setTo(0.6, 0.6);
-
     mouseHand.scale.setTo(0.6, 0.6);
+    mouseHand.visible = true;
+    interactionLayer.add(mouseHand);
 }
 
 // Executed per frame.
@@ -173,34 +212,36 @@ function update() {
 
     for (let reel = 0; reel < 4; reel++) {
         //console.log(slotmachine[i][2].body.position.y);
-        if (slotmachine[reel][2].position.y >= 330) {
-        
+        if (slotmachine[reel][3].position.y >= 330) {
+
             // Destroys the last row of slot images.
-            slotmachine[reel][2].destroy();
+            slotmachine[reel][3].destroy();
 
             // Removes the last row of slot images.
             slotmachine[reel].pop();
 
-            // Adds new slot images with the slotSelection() function.
             slotmachine[reel].unshift(slotSelection());
+
+            game.physics.arcade.enable(slotmachine[reel][0]);
 
             // Positions the last row of slots of slotmachine[reel] to the first row.
             switch (reel) {
+
                 case 0:
-                    slotmachine[reel][0].position.x = 207;
-                    slotmachine[reel][0].body.velocity.y += speed * 5;
+                    slotmachine[reel][0].position.x = 208;
+                    slotmachine[reel][0].body.velocity.y += speed;
                     break;
                 case 1:
-                    slotmachine[reel][0].position.x = 301;
-                    slotmachine[reel][0].body.velocity.y += speed * 5;
+                    slotmachine[reel][0].position.x = 302;
+                    slotmachine[reel][0].body.velocity.y += speed;
                     break;
                 case 2:
-                    slotmachine[reel][0].position.x = 395.5;
-                    slotmachine[reel][0].body.velocity.y += speed * 5;
+                    slotmachine[reel][0].position.x = 398;
+                    slotmachine[reel][0].body.velocity.y += speed;
                     break;
                 case 3:
-                    slotmachine[reel][0].position.x = 495;
-                    slotmachine[reel][0].body.velocity.y += speed * 5;
+                    slotmachine[reel][0].position.x = 494;
+                    slotmachine[reel][0].body.velocity.y += speed;
                     break;
             }
         }
@@ -219,7 +260,7 @@ function actionOnUp(onClick) {
 // If type is not defined, a random slot will be chosen
 function slotSelection(type) {
 
-    let image;
+    image;
 
     if (!type) {
         type = Math.floor(Math.random() * 6);
@@ -228,29 +269,30 @@ function slotSelection(type) {
     // 7 different logos, magic number
     switch (type) {
         case 0:
-            image = game.add.sprite(0, 175, 'Slots_Bar');
+            image = game.add.sprite(0, 120, 'Slots_Bar');
             break;
         case 1:
-            image = game.add.sprite(0, 175, 'Slots_Lemon');
+            image = game.add.sprite(0, 120, 'Slots_Lemon');
             break;
         case 2:
-            image = game.add.sprite(0, 175, 'Slots_Watermelon');
+            image = game.add.sprite(0, 120, 'Slots_Watermelon');
             break;
         case 3:
-            image = game.add.sprite(0, 175, 'Slots_Ten');
+            image = game.add.sprite(0, 120, 'Slots_Ten');
             break;
         case 4:
-            image = game.add.sprite(0, 175, 'Slots_Crown');
+            image = game.add.sprite(0, 120, 'Slots_Crown');
             break;
         case 5:
-            image = game.add.sprite(0, 175, 'Slots_Seven');
+            image = game.add.sprite(0, 120, 'Slots_Seven');
             break;
         case 6:
-            image = game.add.sprite(0, 175, 'Slots_Diamond');
+            image = game.add.sprite(0, 150, 'Slots_Diamond');
             break;
     }
 
     image.scale.setTo(0.58, 0.58);
+    slotsLayer.add(image);
 
     return image;
 }
