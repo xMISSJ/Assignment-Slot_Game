@@ -42,7 +42,7 @@ let background, layer;
 let slotmachineBackground;
 let startMachine, firstPhase;
 let linesNumber, totalBetNumber;
-let slotmachineActivated;
+let slotmachineActivated, popCounter;
 let slotmachine, slots, scrollSpeed;
 let spinStartSpeed, maxUp, maxDown, upDownTimer;
 let spinButton, spinButtonGlow, spinStart, mouseHand;
@@ -56,7 +56,7 @@ function create() {
     slotmachineStart = false;
 
     // Slots scroll speed.
-    scrollSpeed = 500;
+    scrollSpeed = 1000;
 
     // Up-down-movement speed of "Start Spinning"-image.
     spinStartSpeed = 15;
@@ -173,6 +173,8 @@ function create() {
 
 // Executed per frame.
 function update() {
+
+    // Checks the position of the "Start Spinning"-image and moves this up and down.
     if (spinStart.body.position.y <= maxUp) {
         spinStart.body.velocity.y = spinStartSpeed;
     } else if (spinStart.body.position.y >= maxDown) {
@@ -186,6 +188,7 @@ function update() {
 }
 
 function actionOnUp(onClick) {
+
     // If the button is re-pressed, the action will be canceled so the spinButtonGlow disappears and spinStart won't pop up.
     if (onClick && !slotmachineActivated) {
         spinStart.visible = false;
@@ -197,19 +200,41 @@ function actionOnUp(onClick) {
         for (let reel = 0; reel < 4; reel++)
             for (let slot = 0; slot < 4; slot++)
                 slotmachine[reel][slot].body.velocity.y = scrollSpeed;
+
+        // We first start with no delay.
+        let delay = 0;
+
+        for (let reel = 0; reel < 4; reel++) {
+            // For every reel we add a 1 second delay.
+            delay += 900;
+
+            // Timer which is called for every reel loop.
+            setTimeout(() => {
+                // For every slot from a reel, we will perform an action.
+                for (let slot = 0; slot < 4; slot++) {
+                    // We will set the velocity of each slot from a reel to 0, making them stand still.
+                    slotmachine[reel][slot].body.velocity.y = 0;
+                    slotmachine[reel][0].position.y = 120;
+                    slotmachine[reel][1].position.y = 176;
+                    slotmachine[reel][2].position.y = 231;
+                    slotmachine[reel][3].position.y = 281;
+                }
+                // This is the delay for the reel loop.
+            }, delay + 400);
+        }
     }
 }
 
-// If type is not defined, a random slot will be chosen
+// If type is not defined, a random slot will be chosen.
 function slotSelection(type) {
 
     let image;
 
     if (!type) {
-        type = Math.floor(Math.random() * 6);
+        type = Math.floor(Math.random() * 7);
     }
 
-    // 7 different logos, magic number
+    // 7 different logos.
     switch (type) {
         case 0:
             image = game.add.sprite(0, 120, 'Slots_Bar');
@@ -230,7 +255,7 @@ function slotSelection(type) {
             image = game.add.sprite(0, 120, 'Slots_Seven');
             break;
         case 6:
-            image = game.add.sprite(0, 150, 'Slots_Diamond');
+            image = game.add.sprite(0, 120, 'Slots_Diamond');
             break;
     }
 
@@ -241,6 +266,7 @@ function slotSelection(type) {
 }
 
 function startSlotmachine() {
+
     // Initializing slots.
     for (let reel = 0; reel < 4; reel++) {
 
@@ -282,7 +308,9 @@ function startSlotmachine() {
 }
 
 function slotsIllusion() {
+
     for (let reel = 0; reel < 4; reel++) {
+
         //console.log(slotmachine[i][2].body.position.y);
         if (slotmachine[reel][3].position.y >= 335) {
 
@@ -312,7 +340,7 @@ function slotsIllusion() {
                     break;
             }
 
-            slotmachine[reel][0].body.velocity.y = scrollSpeed;
+            slotmachine[reel][0].body.velocity.y += scrollSpeed;
         }
     }
 }
