@@ -365,3 +365,27 @@ function slotsIllusion() {
 
 //     }
 // } 
+
+// function slotMachineEnd() {
+
+//     for (let reel = 0; reel < 4; reel++) {
+//         for (let slot = 0; slot < 4; slot++) {
+
+//             // Ervoor zorgen dat ze alleen bij de 3e plaatje voor elk reel bepaalde plaatjes krijgen.
+//             switch (counter) {
+//                 case 1:
+//                     slotMachine[1][2] = slotSelection(6);
+//                     slotMachine[2][2] = slotSelection(6);
+//                     slotMachine[3][2] = slotSelection(6);
+//                     break;
+//                 case 3:
+//                     slotMachine[reel][2] = slotSelection(6);
+//                     break;
+//                 default:
+//                     slotMachine[reel][2] = slotSelection();
+//                     break;
+//             }
+//             // Ervoor zorgen dat ze allemaal goed gepositioneerd worden.
+//         }
+//     }
+// }
