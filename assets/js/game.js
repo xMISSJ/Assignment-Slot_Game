@@ -36,6 +36,16 @@ function preload() {
     game.load.spritesheet('Numbers_Spritesheet', 'assets/red-numbers-sprite.png', 11, 22, 11);
 }
  
+const SLOT_TYPE = {
+    "BAR": 0,
+    "LEMON": 1,
+    "MELON": 2,
+    "TEN": 3,
+    "CROWN": 4,
+    "SEVEN": 5,
+    "DIAMOND": 6
+}
+ 
 let layers;
 let counter;
 let image, sprite;
@@ -200,8 +210,6 @@ function actionOnUp(onClick) {
         slotMachineActivated = true;
         counter++;
  
-        console.log(counter);
- 
         // Adds y-velocity to every slot in every reel on click.
         for (let reel = 0; reel < 4; reel++)
             for (let slot = 0; slot < 4; slot++)
@@ -216,6 +224,9 @@ function actionOnUp(onClick) {
  
             // Timer which is called for every reel loop.
             setTimeout(() => {
+ 
+                slotMachineEnd(reel);
+ 
                 // For every slot from a reel, we will perform an action.
                 for (let slot = 0; slot < 4; slot++) {
  
@@ -241,31 +252,31 @@ function actionOnUp(onClick) {
 // If type is not defined, a random slot will be chosen.
 function slotSelection(type) {
  
-    if (!type) {
+    if (type === undefined) {
         type = Math.floor(Math.random() * 7);
     }
  
     // 7 different logos.
     switch (type) {
-        case 0:
+        case SLOT_TYPE.BAR:
             image = game.add.sprite(0, 120, 'Slots_Bar');
             break;
-        case 1:
+        case SLOT_TYPE.LEMON:
             image = game.add.sprite(0, 120, 'Slots_Lemon');
             break;
-        case 2:
+        case SLOT_TYPE.MELON:
             image = game.add.sprite(0, 120, 'Slots_Watermelon');
             break;
-        case 3:
+        case SLOT_TYPE.TEN:
             image = game.add.sprite(0, 120, 'Slots_Ten');
             break;
-        case 4:
+        case SLOT_TYPE.CROWN:
             image = game.add.sprite(0, 120, 'Slots_Crown');
             break;
-        case 5:
+        case SLOT_TYPE.SEVEN:
             image = game.add.sprite(0, 120, 'Slots_Seven');
             break;
-        case 6:
+        case SLOT_TYPE.DIAMOND:
             image = game.add.sprite(0, 120, 'Slots_Diamond');
             break;
     }
@@ -298,7 +309,7 @@ function startSlotmachine() {
  
             // Position slots to the correct reel.
             positionSlot(image, reel);
-           
+ 
             slotMachine[reel][slot] = image;
  
         }
@@ -348,26 +359,21 @@ function positionSlot(image, reel) {
     }
 }
  
-// function slotMachineEnd() {
+function slotMachineEnd(reel) {
  
-//     for (let reel = 0; reel < 4; reel++) {
-//         for (let slot = 0; slot < 4; slot++) {
+    // Makes it so the reels are manipulated like bars, random, diamonds.
+    switch(counter) {
+        case 1:
+            slotMachine[reel][2] = slotSelection(SLOT_TYPE.BAR);
+            break;
+        case 3:
+            slotMachine[reel][2] = slotSelection(SLOT_TYPE.DIAMOND);
+            break;
+        default:
+            slotMachine[reel][2] = slotSelection();
+            break;
+    }
+   
+    positionSlot(slotMachine[reel][2], reel);
  
-//             // Ervoor zorgen dat ze alleen bij de 3e plaatje voor elk reel bepaalde plaatjes krijgen.
-//             switch (counter) {
-//                 case 1:
-//                     slotMachine[1][2] = slotSelection(6);
-//                     slotMachine[2][2] = slotSelection(6);
-//                     slotMachine[3][2] = slotSelection(6);
-//                     break;
-//                 case 3:
-//                     slotMachine[reel][2] = slotSelection(6);
-//                     break;
-//                 default:
-//                     slotMachine[reel][2] = slotSelection();
-//                     break;
-//             }
-//             // Ervoor zorgen dat ze allemaal goed gepositioneerd worden.
-//         }
-//     }
-// }
+}
