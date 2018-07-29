@@ -35,6 +35,7 @@ function preload() {
 
     // Parameters: name, asset location, x-size, y-size, frames.
     game.load.spritesheet('Numbers_SpriteSheet', 'assets/red-numbers-sprite.png', 11, 22, 11);
+    game.load.spritesheet('Bars_SpriteSheet', 'assets/slots-bar-sheet.png', 88, 84, 2);
     game.load.spritesheet('Diamonds_SpriteSheet', 'assets/slots-diamond-sheet.png', 88, 84, 2);
 }
 
@@ -46,7 +47,9 @@ const SLOT_TYPE = {
     "TEN": 3,
     "CROWN": 4,
     "SEVEN": 5,
-    "DIAMOND": 6
+    "DIAMOND": 6,
+    "BAR2": 7,
+    "DIAMOND2": 8
 }
 
 let layers;
@@ -187,10 +190,6 @@ function create() {
     mouseHand.scale.setTo(0.6, 0.6);
     mouseHand.visible = true;
     interactionLayer.add(mouseHand);
-
-    diamondSpriteSheet = game.add.sprite(0, 0, 'Diamonds_SpriteSheet');
-    diamondSpriteSheet.scale.setTo(0.58, 0.58);
-    slotsLayer.add(diamondSpriteSheet);
 }
 
 // Executed per frame.
@@ -294,6 +293,16 @@ function slotSelection(type) {
         case SLOT_TYPE.DIAMOND:
             image = game.add.sprite(0, 124, 'Slots_Diamond');
             break;
+        case SLOT_TYPE.BAR2:
+            image = game.add.sprite(0, 0, 'Bars_SpriteSheet');
+            image.frame = 0;
+            game.add.tween(image).to({ frame: 1 }, 100, Phaser.Easing.Linear.None, true, 0, 100, true);
+            break;
+        case SLOT_TYPE.DIAMOND2:
+            image = game.add.sprite(0, 0, 'Diamonds_SpriteSheet');
+            image.frame = 0;
+            game.add.tween(image).to({ frame: 1 }, 100, Phaser.Easing.Linear.None, true, 0, 100, true);
+            break;
     }
 
     image.scale.setTo(0.58, 0.58);
@@ -385,16 +394,21 @@ function slotMachineEnd(reel) {
             if (reel != 0) {
                 slotMachine[reel][2].destroy();
                 slotMachine[reel][2] = slotSelection(SLOT_TYPE.BAR);
+            //     slotMachine[reel][2].destroy();
+            //     // Waits 0.2 seconds before executing animation.
+            //     setTimeout(() => {
+            //        slotMachine[reel][2] = slotSelection(SLOT_TYPE.BAR2);
+            //     }, 1000 );
             }
             break;
         case 3:
             slotMachine[reel][2].destroy();
             slotMachine[reel][2] = slotSelection(SLOT_TYPE.DIAMOND);
-            //slotMachine[reel][2].destroy();
-            // Waits 0.2 seconds before executing animation.
-            //setTimeout(() => {
-            //    slotMachine[reel][2] = diamondAnimation(slotMachine[reel][2], reel);
-            //}, 6000 );
+            // slotMachine[reel][2].destroy();
+            // // Waits 0.2 seconds before executing animation.
+            // setTimeout(() => {
+            //    slotMachine[reel][2] = slotSelection(SLOT_TYPE.DIAMOND2);
+            // }, 1000 );
             break;
         default:
             slotMachine[reel][2].destroy();
@@ -405,10 +419,3 @@ function slotMachineEnd(reel) {
     positionSlot(slotMachine[reel][2], reel);
 
 }
-
-// function diamondAnimation(image, reel) {
-//     diamondSpriteSheet = image;
-//     positionSlot(image, reel);
-//     diamondSpriteSheet.frame = 0;
-//     game.add.tween(diamondSpriteSheet).to({ frame: 1 }, 100, Phaser.Easing.Linear.None, true, 0, 100, true);
-// }
