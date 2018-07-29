@@ -33,7 +33,9 @@ function preload() {
     game.load.image('Top_Diamond_Glow', 'assets/top-diamond-glow.png');
     game.load.image('Total_Bet_Number', 'assets/total-bet-number.png');
 
-    game.load.spritesheet('Numbers_Spritesheet', 'assets/red-numbers-sprite.png', 11, 22, 11);
+    // Parameters: name, asset location, x-size, y-size, frames.
+    game.load.spritesheet('Numbers_SpriteSheet', 'assets/red-numbers-sprite.png', 11, 22, 11);
+    game.load.spritesheet('Diamonds_SpriteSheet', 'assets/slots-diamond-sheet.png', 88, 84, 2);
 }
 
 // Using JSON to create slot types.
@@ -51,11 +53,12 @@ let layers;
 let counter;
 let image, sprite;
 let background, layer;
+let diamondSpriteSheet;
 let slotMachineBackground;
 let startMachine, firstPhase;
 let linesNumber, totalBetNumber;
-let slotMachineActivated, popCounter;
 let slotMachine, slots, scrollSpeed;
+let slotMachineActivated, popCounter;
 let spinStartSpeed, maxUp, maxDown, upDownTimer;
 let spinButton, spinButtonGlow, spinStart, mouseHand;
 let reelBorder1, reelBorder2, reelBorder3, reelBorder4;
@@ -149,19 +152,19 @@ function create() {
     slotMachineBackground.scale.setTo(0.62, 0.62);
     slotMachineLayer.add(slotMachineBackground);
 
-    linesNumber = game.add.image(198, 394, 'Lines_Number');
+    linesNumber = game.add.image(198, 393, 'Lines_Number');
     linesNumber.scale.setTo(0.7, 0.7);
     slotMachineLayer.add(linesNumber);
 
-    totalBetNumber = game.add.image(241.5, 394, 'Total_Bet_Number');
+    totalBetNumber = game.add.image(241.5, 393, 'Total_Bet_Number');
     totalBetNumber.scale.setTo(0.7, 0.7);
     slotMachineLayer.add(totalBetNumber);
 
-    spinButton = game.add.button(481, 372, 'Spin_Button', actionOnUp, this, 2, 1, 0);
+    spinButton = game.add.button(481, 371, 'Spin_Button', actionOnUp, this, 2, 1, 0);
     spinButton.scale.setTo(0.611, 0.611);
     interactionLayer.add(spinButton);
 
-    spinButtonGlow = game.add.image(481, 372, 'Spin_Button_Lighter');
+    spinButtonGlow = game.add.image(481, 371, 'Spin_Button_Lighter');
     spinButtonGlow.scale.setTo(0.611, 0.611);
     spinButtonGlow.visible = false;
     interactionLayer.add(spinButtonGlow);
@@ -175,7 +178,7 @@ function create() {
     game.physics.enable(spinStart, Phaser.Physics.ARCADE);
 
     // Takes the first sprite from the spritesheet.
-    sprite = game.add.sprite(376.5, 394, 'Numbers_Spritesheet');
+    sprite = game.add.sprite(376.5, 393, 'Numbers_SpriteSheet');
     sprite.scale.setTo(0.7, 0.7);
     sprite.frame = 0;
     interactionLayer.add(sprite);
@@ -184,6 +187,10 @@ function create() {
     mouseHand.scale.setTo(0.6, 0.6);
     mouseHand.visible = true;
     interactionLayer.add(mouseHand);
+
+    diamondSpriteSheet = game.add.sprite(0, 0, 'Diamonds_SpriteSheet');
+    diamondSpriteSheet.scale.setTo(0.58, 0.58);
+    slotsLayer.add(diamondSpriteSheet);
 }
 
 // Executed per frame.
@@ -224,7 +231,7 @@ function actionOnUp(onClick) {
             // For every reel we add a 0.9 second delay.
             if (reel == 3) {
                 // Last wheel is slower for "extra" intensity
-                delay += 1500;
+                delay += 1800;
             } else {
                 delay += 900;
             }
@@ -383,6 +390,11 @@ function slotMachineEnd(reel) {
         case 3:
             slotMachine[reel][2].destroy();
             slotMachine[reel][2] = slotSelection(SLOT_TYPE.DIAMOND);
+            //slotMachine[reel][2].destroy();
+            // Waits 0.2 seconds before executing animation.
+            //setTimeout(() => {
+            //    slotMachine[reel][2] = diamondAnimation(slotMachine[reel][2], reel);
+            //}, 6000 );
             break;
         default:
             slotMachine[reel][2].destroy();
@@ -393,3 +405,10 @@ function slotMachineEnd(reel) {
     positionSlot(slotMachine[reel][2], reel);
 
 }
+
+// function diamondAnimation(image, reel) {
+//     diamondSpriteSheet = image;
+//     positionSlot(image, reel);
+//     diamondSpriteSheet.frame = 0;
+//     game.add.tween(diamondSpriteSheet).to({ frame: 1 }, 100, Phaser.Easing.Linear.None, true, 0, 100, true);
+// }
