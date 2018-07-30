@@ -3,7 +3,8 @@ const game = new Phaser.Game(750, 450, Phaser.AUTO, '', { preload: preload, crea
 
 // Load the game assets before the game starts.
 function preload() {
-    game.load.image('Background', 'assets/bg-2.png');
+    game.load.image('Background', 'assets/bg.jpg');
+    game.load.image('Background_2', 'assets/bg-2.jpg');
     game.load.image('Background_Coins', 'assets/bg-coins.png');
     game.load.image('Background_Overlay', 'assets/dark-bg-overlay.png');
     game.load.image('Big_Win', 'assets/big-win.png');
@@ -48,24 +49,21 @@ const SLOT_TYPE = {
     "CROWN": 4,
     "SEVEN": 5,
     "DIAMOND": 6,
-    "BAR2": 7,
-    "DIAMOND2": 8
 }
 
-let layers;
 let counter;
+let slotStopped;
 let image, sprite;
-let background, layer;
 let slotMachineBackground;
 let startMachine, firstPhase;
+let background, background2
 let linesNumber, totalBetNumber;
 let slotMachine, slots, scrollSpeed;
 let slotMachineActivated, popCounter;
 let spinStartSpeed, maxUp, maxDown, upDownTimer;
 let spinButton, spinButtonGlow, spinStart, mouseHand;
 let reelBorder1, reelBorder2, reelBorder3, reelBorder4;
-let reelOverlay1, reelOverlay2, reelOverlay3, reelOverlay4;
-let diamondBlink, diamondSpriteSheet, diamondTransform, diamondLight;
+let reelOverlay1, reelOverlay2, reelOverlay3, reelOverlay4
 let reelBackground1, reelBackground2, reelBackground3, reelBackground4;
 
 // Executed after everything is loaded.
@@ -73,6 +71,8 @@ function create() {
 
     slotMachineActivated = false;
     slotMachineStart = false;
+    slotStopped = false;
+
     counter = 0;
 
     // Slots scroll speed.
@@ -88,16 +88,21 @@ function create() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     // Creates layers and adds a group to each. The groups are ordered from lowest to highest.
+    backgroundLayer = game.add.group();
     reelBackgroundLayer = game.add.group();
     slotsLayer = game.add.group();
-    backgroundLayer = game.add.group();
     reelOverlayLayer = game.add.group();
     slotMachineLayer = game.add.group();
     reelBorderLayer = game.add.group();
     interactionLayer = game.add.group();
+    highestLayer = game.add.group();
 
-    background = game.add.image(-15, 0, 'Background');
-    background.scale.setTo(0.60, 0.70);
+    background2 = game.add.image(0, 0, 'Background_2');
+    background2.scale.setTo(0.58, 0.63);
+    highestLayer.add(background2);
+
+    background = game.add.image(0, 0, 'Background');
+    background.scale.setTo(0.58, 0.63);
     backgroundLayer.add(background);
 
     // Adds the reel background.
@@ -193,15 +198,11 @@ function create() {
 
     diamondSpriteSheet = game.add.sprite(0, 0, 'Diamonds_SpriteSheet');
     diamondSpriteSheet.scale.setTo(0.58, 0.58);
+    slotsLayer.add(diamondSpriteSheet);
 
-    diamondLight = game.add.sprite(100, 0, 'Slots_Diamond_Lighter');
-    diamondLight.scale.setTo(0.58, 0.58);
-
-    diamondSpriteSheet.frame = 0;
-    diamondBlink = game.add.tween(diamondSpriteSheet);
-    diamondBlink.to({ frame: 1 }, 200, Phaser.Easing.Linear.None, true, 0, 200, true);
-    diamondBlink.onStart.add(transformBig, this);
-    diamondBlink.start();
+    barSpriteSheet = game.add.sprite(0, 0, 'Bars_SpriteSheet');
+    barSpriteSheet.scale.setTo(0.58, 0.58);
+    slotsLayer.add(barSpriteSheet);
 }
 
 // Executed per frame.
@@ -240,12 +241,11 @@ function actionOnUp(onClick) {
 
         for (let reel = 0; reel < 4; reel++) {
             // For every reel we add a 0.9 second delay.
-            if (reel == 3) {
-                // Last wheel is slower for "extra" intensity
-                delay += 1800;
-            } else {
-                delay += 900;
-            }
+            delay += 900;
+
+            // For the last reel we add a 0.6 second delay.
+            if (reel == 3)
+                delay += 600;
 
             // Timer which is called for every reel loop.
             setTimeout(() => {
@@ -269,9 +269,28 @@ function actionOnUp(onClick) {
                         slotMachineActivated = false;
                     }
                 }
-                // This is the delay for the reel loop.
+
             }, delay + 600);
         }
+
+        // For the first spin we make it so the bars blink all at once after the slots stopped spinning.
+        if (counter == 1) {
+            setTimeout(() => {
+                for (let reel = 0; reel < 4; reel++) {
+                    startAnimation(slotMachine[reel][2]);
+                }
+            }, 4850);
+        }
+
+        // For the last spin we make it so the diamonds blink all at once after the slots stopped spinning.
+        if (counter == 3) {
+            setTimeout(() => {
+                for (let reel = 0; reel < 4; reel++) {
+                    startAnimation(slotMachine[reel][2]);
+                }
+            }, 4850);
+        }
+
     }
 }
 
@@ -285,7 +304,7 @@ function slotSelection(type) {
     // 7 different logos.
     switch (type) {
         case SLOT_TYPE.BAR:
-            image = game.add.sprite(0, 124, 'Slots_Bar');
+            image = game.add.sprite(0, 124, 'Bars_SpriteSheet');
             break;
         case SLOT_TYPE.LEMON:
             image = game.add.sprite(0, 124, 'Slots_Lemon');
@@ -303,7 +322,7 @@ function slotSelection(type) {
             image = game.add.sprite(0, 124, 'Slots_Seven');
             break;
         case SLOT_TYPE.DIAMOND:
-            image = game.add.sprite(0, 124, 'Slots_Diamond');
+            image = game.add.sprite(0, 124, 'Diamonds_SpriteSheet');
             break;
     }
 
@@ -396,29 +415,33 @@ function slotMachineEnd(reel) {
             if (reel != 0) {
                 slotMachine[reel][2].destroy();
                 slotMachine[reel][2] = slotSelection(SLOT_TYPE.BAR);
+                positionSlot(slotMachine[reel][2], reel);
+
+                // Prevents the 3rd slot of the first reel to be a bar.
+            } else {
+                slotMachine[reel][2].destroy();
+                let type = Math.floor(Math.random() * 6) + 1;
+                slotMachine[reel][2] = slotSelection(type);
+                positionSlot(slotMachine[reel][2], reel);
             }
             break;
         case 3:
             slotMachine[reel][2].destroy();
             slotMachine[reel][2] = slotSelection(SLOT_TYPE.DIAMOND);
+            positionSlot(slotMachine[reel][2], reel);
             break;
         default:
             slotMachine[reel][2].destroy();
             slotMachine[reel][2] = slotSelection();
+            positionSlot(slotMachine[reel][2], reel);
             break;
     }
-    positionSlot(slotMachine[reel][2], reel);
 }
 
-function transformBig() {
-    diamondTransform = game.add.tween(diamondLight.scale);
-    diamondTransform.to({ x: 0.7, y: 0.7 }, 200, Phaser.Easing.Linear.None);
-    diamondTransform.onComplete.addOnce(transformSmall, this);
-    diamondTransform.start();
-}
+function startAnimation(item) {
+    let spriteSheet = item;
+    let blink = game.add.tween(spriteSheet);
 
-function transformSmall() {
-    diamondTransform.to({ x: 0.58, y: 0.58 }, 200, Phaser.Easing.Linear.None);
-    diamondTransform.onComplete.addOnce(transformBig, this);
-    diamondTransform.start();
+    spriteSheet.frame = 0;
+    blink.to({ frame: 1 }, 200, Phaser.Easing.Linear.None, true, 0, 200, true);
 }
