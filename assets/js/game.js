@@ -256,12 +256,14 @@ function actionOnUp(onClick) {
                 for (let slot = 0; slot < 4; slot++) {
 
                     // We will set the velocity of each slot from a reel to 0, making them stand still.
-                    //console.log(`Reel: ${reel} Slot: ${slot}`);
                     slotMachine[reel][slot].body.velocity.y = 0;
-                    slotMachine[reel][0].position.y = 124;
-                    slotMachine[reel][1].position.y = 183;
-                    slotMachine[reel][2].position.y = 233;
-                    slotMachine[reel][3].position.y = 285;
+                    slotMachine[reel][0].position.y = 110;
+                    slotMachine[reel][1].position.y = 173;
+                    slotMachine[reel][2].position.y = 223;
+                    slotMachine[reel][3].position.y = 275;
+
+                    // Bounces the slots a bit for extra effect.
+                    bounceSlotMachine(slotMachine[reel][slot]);
 
                     // The button stops glowing at the last reel when the middle slot has stopped.
                     if (slotMachine[3][3].body.velocity.y <= 0) {
@@ -276,7 +278,7 @@ function actionOnUp(onClick) {
         // For the first spin we make it so the bars blink all at once after the slots stopped spinning.
         if (counter == 1) {
             setTimeout(() => {
-                for (let reel = 0; reel < 4; reel++) {
+                for (let reel = 1; reel < 4; reel++) {
                     startAnimation(slotMachine[reel][2]);
                 }
             }, 4850);
@@ -407,6 +409,7 @@ function positionSlot(image, reel) {
     }
 }
 
+
 function slotMachineEnd(reel) {
 
     // Makes it so the reels are manipulated like bars, random, diamonds.
@@ -444,4 +447,10 @@ function startAnimation(item) {
 
     spriteSheet.frame = 0;
     blink.to({ frame: 1 }, 200, Phaser.Easing.Linear.None, true, 0, 200, true);
+}
+
+function bounceSlotMachine(slot) {
+    bounce1 = slot;
+    bounce1 = game.add.tween(slot);
+    bounce1.to({ y: slot.position.y + 10 }, 500, Phaser.Easing.Bounce.Out, true);
 }
