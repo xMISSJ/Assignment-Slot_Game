@@ -53,6 +53,7 @@ const SLOT_TYPE = {
 
 let counter;
 let slotStopped;
+let topBarsGlow;
 let image, sprite;
 let slotMachineBackground;
 let startMachine, firstPhase;
@@ -203,6 +204,11 @@ function create() {
     barSpriteSheet = game.add.sprite(0, 0, 'Bars_SpriteSheet');
     barSpriteSheet.scale.setTo(0.58, 0.58);
     slotsLayer.add(barSpriteSheet);
+
+    topBarsGlow = game.add.sprite(316, 58, 'Top_Bars_Glow');
+    topBarsGlow.scale.setTo(0.62, 0.62);
+    topBarsGlow.visible = false;
+    interactionLayer.add(topBarsGlow);
 }
 
 // Executed per frame.
@@ -280,8 +286,13 @@ function actionOnUp(onClick) {
             setTimeout(() => {
                 for (let reel = 1; reel < 4; reel++) {
                     startAnimation(slotMachine[reel][2]);
+                    topBarsGlow.visible = true;
                 }
-            }, 4850);
+            }, 5000);
+
+            topBarsGlow.visible = false;
+            
+
         }
 
         // For the last spin we make it so the diamonds blink all at once after the slots stopped spinning.
@@ -290,7 +301,7 @@ function actionOnUp(onClick) {
                 for (let reel = 0; reel < 4; reel++) {
                     startAnimation(slotMachine[reel][2]);
                 }
-            }, 4850);
+            }, 5000);
         }
 
     }
