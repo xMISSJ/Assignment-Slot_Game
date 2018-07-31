@@ -13,13 +13,15 @@ function preload() {
     game.load.image('Huge_Win', 'assets/huge-win.png');
     game.load.image('Install_Button', 'assets/install-btn.png');
     game.load.image('Lines_Number', 'assets/lines-number.png');
-    game.load.image('Numbers_Top', 'assets/number-button.png');
+    game.load.image('WinScore_1', 'assets/number-button2.png');
+    game.load.image('WinScore_2', 'assets/number-button.png');
     game.load.image('Reel_Background', 'assets/reel-bg.png');
     game.load.image('Reel_Border', 'assets/reel-border.png');
     game.load.image('Reel_Overlay', 'assets/reel-overlay.png');
     game.load.image('Slot_Machine', 'assets/slotmachine-transparant2.png');
     game.load.image('Slots_Bar', 'assets/slots-bar.png');
     game.load.image('Slots_Bar_Lighter', 'assets/slots-bar-lighter.png');
+    game.load.image('Slots_Cherry', 'assets/slots-cherry.png');
     game.load.image('Slots_Crown', 'assets/slots-crown.png');
     game.load.image('Slots_Diamond', 'assets/slots-diamond.png');
     game.load.image('Slots_Diamond_Lighter', 'assets/slots-diamond-lighter.png');
@@ -46,15 +48,18 @@ const SLOT_TYPE = {
     "LEMON": 1,
     "MELON": 2,
     "TEN": 3,
-    "CROWN": 4,
-    "SEVEN": 5,
-    "DIAMOND": 6,
+    "CHERRY": 4,
+    "CROWN": 5,
+    "SEVEN": 6,
+    "DIAMOND": 7,
 }
 
 let counter;
 let slotStopped;
 let image, sprite;
+let installButton;
 let darkBackground;
+let winScore1, winScore2;
 let slotMachineBackground;
 let background, background2
 let startMachine, firstPhase;
@@ -90,23 +95,26 @@ function create() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     // Creates layers and adds a group to each. The groups are ordered from lowest to highest.
-    backgroundLayer = game.add.group();
+    lowestLayer = game.add.group();
     reelBackgroundLayer = game.add.group();
     slotsLayer = game.add.group();
     reelOverlayLayer = game.add.group();
     slotMachineLayer = game.add.group();
     reelBorderLayer = game.add.group();
     interactionLayer = game.add.group();
+    backgroundLayer = game.add.group();
     highestLayer = game.add.group();
 
+    // Illusion of background so when images are added you won't see them on the top left corner.
     background2 = game.add.image(0, 0, 'Background_2');
-    background2.scale.setTo(0.58, 0.63);
-    interactionLayer.add(background2);
+    background2.scale.setTo(0.598, 0.6232);
+
+    backgroundLayer.add(background2);
 
     background = game.add.image(game.world.centerX, game.world.centerY, 'Background');
     background.anchor.set(0.5, 0.5);
     background.scale.setTo(0.58, 0.63);
-    backgroundLayer.add(background);
+    lowestLayer.add(background);
 
     // Adds the reel background.
     reelBackground1 = game.add.image(195, 166, 'Reel_Background');
@@ -220,19 +228,35 @@ function create() {
 
     darkBackground = game.add.sprite(0, 0, 'Background_Overlay');
     darkBackground.visible = false;
-    interactionLayer.add(darkBackground);
+    backgroundLayer.add(darkBackground);
 
     bigWin = game.add.sprite(game.world.centerX, game.world.centerY, 'Big_Win');
     bigWin.anchor.set(0.5, 0.5)
-    bigWin.scale.setTo(0.7, 0.7);
+    bigWin.scale.setTo(0.75, 0.75);
     bigWin.visible = false;
     highestLayer.add(bigWin);
 
     hugeWin = game.add.sprite(game.world.centerX, game.world.centerY + 15, 'Huge_Win');
     hugeWin.anchor.set(0.5, 0.5);
-    hugeWin.scale.setTo(0.7, 0.7);
+    hugeWin.scale.setTo(0.75, 0.75);
     hugeWin.visible = false;
     highestLayer.add(hugeWin);
+
+    winScore1 = game.add.sprite(306, 393, 'WinScore_1');
+    winScore1.scale.setTo(0.7, 0.7);
+    winScore1.visible = false;
+    interactionLayer.add(winScore1)
+
+    winScore2 = game.add.sprite(296, 393, 'WinScore_2');
+    winScore2.scale.setTo(0.7, 0.7);
+    winScore2.visible = false;
+    interactionLayer.add(winScore2);
+
+    installButton = game.add.sprite(game.world.centerX + 4, game.world.centerY + 120, 'Install_Button');
+    installButton.anchor.set(0.5, 0.5);
+    installButton.scale.setTo(0.6, 0.6);
+    installButton.visible = false;
+    highestLayer.add(installButton);
 }
 
 // Executed per frame.
@@ -314,8 +338,11 @@ function actionOnUp(onClick) {
 
                     // Delays 0.2 seconds before showing a pop-up.
                     setTimeout(() => {
+                        sprite.visible = false;
+                        winScore1.visible = true;
                         darkBackground.visible = true;
                         bigWin.visible = true;
+
                         // Animation for the pop-up.
                         winAnimation(bigWin);
                     }, 1000);
@@ -326,6 +353,9 @@ function actionOnUp(onClick) {
             topBarsGlow.visible = false;
             bigWin.visible = false;
             darkBackground.visible = false;
+            topDiamondsGlow.visible = false;
+            hugeWin.visible = false;
+            installButton.visible = false;
         }
 
         // For the last spin we make it so the diamonds blink all at once after the slots stopped spinning.
@@ -337,16 +367,17 @@ function actionOnUp(onClick) {
                 }
                 // Delays 0.2 seconds before showing a pop-up.
                 setTimeout(() => {
+                    sprite.visible = false;
+                    winScore1.visible = false;
+                    winScore2.visible = true;
                     darkBackground.visible = true;
                     hugeWin.visible = true;
+
                     // Animation for the pop-up.
                     winAnimation(hugeWin);
+                    installButton.visible = true;
                 }, 1100);
             }, 5000);
-        } else {
-            topDiamondsGlow.visible = false;
-            hugeWin.visible = false;
-            darkBackground.visible = false;
         }
     }
 }
@@ -371,6 +402,9 @@ function slotSelection(type) {
             break;
         case SLOT_TYPE.TEN:
             image = game.add.sprite(0, 124, 'Slots_Ten');
+            break;
+        case SLOT_TYPE.CHERRY:
+            image = game.add.sprite(0, 124, 'Slots_Cherry');
             break;
         case SLOT_TYPE.CROWN:
             image = game.add.sprite(0, 124, 'Slots_Crown');
@@ -515,5 +549,5 @@ function bounceSlotMachine(slot) {
 function winAnimation(popup) {
     let tweenTransform = popup;
     tweenTransform = game.add.tween(popup.scale);
-    tweenTransform.to({ x: 0.73, y: 0.73 }, 300, Phaser.Easing.Linear.None, true, 0, 300, true);
+    tweenTransform.to({ x: 0.7, y: 0.7 }, 300, Phaser.Easing.Linear.None, true, 0, 300, true);
 }
