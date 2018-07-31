@@ -31,7 +31,7 @@ function preload() {
     game.load.image('Spin_Button_Lighter', 'assets/spin-btn-glow.png');
     game.load.image('Start_Spinning', 'assets/start-spinning.png');
     game.load.image('Top_Bars_Glow', 'assets/top-bars-glow.png');
-    game.load.image('Top_Diamond_Glow', 'assets/top-diamond-glow.png');
+    game.load.image('Top_Diamonds_Glow', 'assets/top-diamond-glow.png');
     game.load.image('Total_Bet_Number', 'assets/total-bet-number.png');
 
     // Parameters: name, asset location, x-size, y-size, frames.
@@ -55,14 +55,14 @@ let counter;
 let slotStopped;
 let image, sprite;
 let darkBackground;
-let topBarsGlow, bigWin;
 let slotMachineBackground;
-let startMachine, firstPhase;
 let background, background2
+let startMachine, firstPhase;
 let linesNumber, totalBetNumber;
 let slotMachine, slots, scrollSpeed;
 let slotMachineActivated, popCounter;
 let spinStartSpeed, maxUp, maxDown, upDownTimer;
+let topBarsGlow, topDiamondsGlow, bigWin, hugeWin;
 let spinButton, spinButtonGlow, spinStart, mouseHand;
 let reelBorder1, reelBorder2, reelBorder3, reelBorder4;
 let reelOverlay1, reelOverlay2, reelOverlay3, reelOverlay4
@@ -213,6 +213,11 @@ function create() {
     topBarsGlow.visible = false;
     interactionLayer.add(topBarsGlow);
 
+    topDiamondsGlow = game.add.sprite(303, 33, 'Top_Diamonds_Glow');
+    topDiamondsGlow.scale.setTo(0.62, 0.62);
+    topDiamondsGlow.visible = false;
+    interactionLayer.add(topDiamondsGlow);
+
     darkBackground = game.add.sprite(0, 0, 'Background_Overlay');
     darkBackground.visible = false;
     interactionLayer.add(darkBackground);
@@ -222,6 +227,12 @@ function create() {
     bigWin.scale.setTo(0.7, 0.7);
     bigWin.visible = false;
     highestLayer.add(bigWin);
+
+    hugeWin = game.add.sprite(game.world.centerX, game.world.centerY + 15, 'Huge_Win');
+    hugeWin.anchor.set(0.5, 0.5);
+    hugeWin.scale.setTo(0.7, 0.7);
+    hugeWin.visible = false;
+    highestLayer.add(hugeWin);
 }
 
 // Executed per frame.
@@ -307,7 +318,8 @@ function actionOnUp(onClick) {
                         bigWin.visible = true;
                         // Animation for the pop-up.
                         winAnimation(bigWin);
-                    }, 2000);
+                    }, 1000);
+                    animationPlayed = true;
                 }
             }, 5000);
         } else {
@@ -321,10 +333,21 @@ function actionOnUp(onClick) {
             setTimeout(() => {
                 for (let reel = 0; reel < 4; reel++) {
                     startAnimation(slotMachine[reel][2]);
+                    topDiamondsGlow.visible = true;
                 }
+                // Delays 0.2 seconds before showing a pop-up.
+                setTimeout(() => {
+                    darkBackground.visible = true;
+                    hugeWin.visible = true;
+                    // Animation for the pop-up.
+                    winAnimation(hugeWin);
+                }, 1100);
             }, 5000);
+        } else {
+            topDiamondsGlow.visible = false;
+            hugeWin.visible = false;
+            darkBackground.visible = false;
         }
-
     }
 }
 
