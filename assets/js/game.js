@@ -53,8 +53,9 @@ const SLOT_TYPE = {
 
 let counter;
 let slotStopped;
-let topBarsGlow;
 let image, sprite;
+let darkBackground;
+let topBarsGlow, bigWin;
 let slotMachineBackground;
 let startMachine, firstPhase;
 let background, background2
@@ -100,9 +101,10 @@ function create() {
 
     background2 = game.add.image(0, 0, 'Background_2');
     background2.scale.setTo(0.58, 0.63);
-    highestLayer.add(background2);
+    interactionLayer.add(background2);
 
-    background = game.add.image(0, 0, 'Background');
+    background = game.add.image(game.world.centerX, game.world.centerY, 'Background');
+    background.anchor.set(0.5, 0.5);
     background.scale.setTo(0.58, 0.63);
     backgroundLayer.add(background);
 
@@ -157,7 +159,8 @@ function create() {
     reelBorderLayer.add(reelBorder3);
     reelBorderLayer.add(reelBorder4);
 
-    slotMachineBackground = game.add.image(155, 17, 'Slot_Machine');
+    slotMachineBackground = game.add.image(game.world.centerX, game.world.centerY + 8, 'Slot_Machine');
+    slotMachineBackground.anchor.set(0.5, 0.5);
     slotMachineBackground.scale.setTo(0.62, 0.62);
     slotMachineLayer.add(slotMachineBackground);
 
@@ -209,6 +212,16 @@ function create() {
     topBarsGlow.scale.setTo(0.62, 0.62);
     topBarsGlow.visible = false;
     interactionLayer.add(topBarsGlow);
+
+    darkBackground = game.add.sprite(0, 0, 'Background_Overlay');
+    darkBackground.visible = false;
+    interactionLayer.add(darkBackground);
+
+    bigWin = game.add.sprite(game.world.centerX, game.world.centerY, 'Big_Win');
+    bigWin.anchor.set(0.5, 0.5)
+    bigWin.scale.setTo(0.7, 0.7);
+    bigWin.visible = false;
+    highestLayer.add(bigWin);
 }
 
 // Executed per frame.
@@ -287,12 +300,20 @@ function actionOnUp(onClick) {
                 for (let reel = 1; reel < 4; reel++) {
                     startAnimation(slotMachine[reel][2]);
                     topBarsGlow.visible = true;
+
+                    // Delays 0.2 seconds before showing a pop-up.
+                    setTimeout(() => {
+                        darkBackground.visible = true;
+                        bigWin.visible = true;
+                        // Animation for the pop-up.
+                        winAnimation(bigWin);
+                    }, 2000);
                 }
             }, 5000);
-
+        } else {
             topBarsGlow.visible = false;
-            
-
+            bigWin.visible = false;
+            darkBackground.visible = false;
         }
 
         // For the last spin we make it so the diamonds blink all at once after the slots stopped spinning.
@@ -452,16 +473,24 @@ function slotMachineEnd(reel) {
     }
 }
 
+// Blink animation.
 function startAnimation(item) {
     let spriteSheet = item;
     let blink = game.add.tween(spriteSheet);
-
     spriteSheet.frame = 0;
     blink.to({ frame: 1 }, 200, Phaser.Easing.Linear.None, true, 0, 200, true);
 }
 
+// Bounce animation.
 function bounceSlotMachine(slot) {
     bounce1 = slot;
     bounce1 = game.add.tween(slot);
     bounce1.to({ y: slot.position.y + 10 }, 500, Phaser.Easing.Bounce.Out, true);
+}
+
+// Transform animation.
+function winAnimation(popup) {
+    let tweenTransform = popup;
+    tweenTransform = game.add.tween(popup.scale);
+    tweenTransform.to({ x: 0.73, y: 0.73 }, 300, Phaser.Easing.Linear.None, true, 0, 300, true);
 }
