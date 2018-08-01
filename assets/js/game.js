@@ -59,6 +59,7 @@ let slotStopped;
 let image, sprite;
 let installButton;
 let darkBackground;
+let animationPlayed;
 let winScore1, winScore2;
 let slotMachineBackground;
 let background, background2
@@ -79,6 +80,7 @@ function create() {
     slotMachineActivated = false;
     slotMachineStart = false;
     slotStopped = false;
+    animationPlayed = true;
 
     counter = 0;
 
@@ -279,11 +281,12 @@ function update() {
 function actionOnUp(onClick) {
 
     // If the button is re-pressed, the action will be canceled so the spinButtonGlow disappears and spinStart won't pop up.
-    if (onClick && !slotMachineActivated) {
+    if (onClick && !slotMachineActivated && !(bigWin.visible || hugeWin.visible) && animationPlayed) {
         spinStart.visible = false;
         spinButtonGlow.visible = true;
         mouseHand.visible = false;
         slotMachineActivated = true;
+        animationPlayed = false;
         counter++;
 
         // Adds y-velocity to every slot in every reel on click.
@@ -334,7 +337,7 @@ function actionOnUp(onClick) {
         if (counter == 1) {
             setTimeout(() => {
                 for (let reel = 1; reel < 4; reel++) {
-                    startAnimation(slotMachine[reel][2]);
+                    blinkAnimation(slotMachine[reel][2]);
                     topBarsGlow.visible = true;
 
                     // Delays 0.2 seconds before showing a pop-up.
@@ -347,7 +350,6 @@ function actionOnUp(onClick) {
                         // Animation for the pop-up.
                         winAnimation(bigWin);
                     }, 1800);
-                    animationPlayed = true;
                 }
             }, 5000);
         } else {
@@ -357,13 +359,14 @@ function actionOnUp(onClick) {
             topDiamondsGlow.visible = false;
             hugeWin.visible = false;
             installButton.visible = false;
+            animationPlayed = true;
         }
 
         // For the last spin we make it so the diamonds blink all at once after the slots stopped spinning.
         if (counter == 3) {
             setTimeout(() => {
                 for (let reel = 0; reel < 4; reel++) {
-                    startAnimation(slotMachine[reel][2]);
+                    blinkAnimation(slotMachine[reel][2]);
 
                     // Time-out before diamonds start to pop.
                     setTimeout(() => {
@@ -377,6 +380,7 @@ function actionOnUp(onClick) {
                     winScore1.visible = false;
                     winScore2.visible = true;
                     darkBackground.visible = true;
+                    darkBackground.alpha = 1;
                     hugeWin.visible = true;
 
                     // Animation for the pop-up.
@@ -393,7 +397,7 @@ function actionOnUp(onClick) {
 function slotSelection(type) {
 
     if (type === undefined) {
-        type = Math.floor(Math.random() * 7);
+        type = Math.floor(Math.random() * 8);
     }
 
     // 7 different logos.
@@ -539,7 +543,7 @@ function slotMachineEnd(reel) {
 }
 
 // Blink animation.
-function startAnimation(item) {
+function blinkAnimation(item) {
     let spriteSheet = item;
     let blink = game.add.tween(spriteSheet);
     spriteSheet.frame = 0;
@@ -555,16 +559,46 @@ function bounceAnimation(slot) {
 
 // Transform animation (diamond).
 function diamondAnimation(diamond) {
-    let tweenTransform = diamond;
-    tweenTransform = game.add.tween(diamond.scale);
-    tweenTransform.to({ x: 0.68, y: 0.68 }, 300, Phaser.Easing.Linear.None, true, 0, 300, true);
+    diamondScale = diamond;
+    diamondScale = game.add.tween(diamond.scale).to({ x: 0.68, y: 0.68 }, 300, Phaser.Easing.Linear.None, true, 0, 300, true);
 }
 
 // Transform animation (win pop-up).
 function winAnimation(popup) {
-    let tweenTransform = popup;
-    tweenTransform = game.add.tween(popup.scale);
-    tweenTransform.to({ x: 0.7, y: 0.7 }, 300, Phaser.Easing.Linear.None, true, 0, 300, true);
+    winScale = popup;
+    winScale = game.add.tween(popup.scale).to({ x: 0.7, y: 0.7 }, 300, Phaser.Easing.Linear.None, true, 0, 300, true);
+
+    if (counter == 1) {
+        // Delays by 2 seconds before the pop-up and darkBackground are faded out.
+        setTimeout(() => {
+            // Fades out the bigWin popup and the darkBackground.
+            winFadeOut = game.add.tween(popup).to({ alpha: 0 }, 2000, Phaser.Easing.Linear.None, true);
+            winFadeOut2 = game.add.tween(darkBackground).to({ alpha: 0 }, 2500, Phaser.Easing.Linear.None, true);
+        }, 2000)
+
+        // Then makes the pop-up and darkBackground invisible.
+        setTimeout(() => {
+            popup.visible = false;
+            darkBackground.visible = false;
+            animationPlayed = true;
+        }, 4500)
+    }
+
+    /* Uncomment this section if you wish for the user to be able to continue playing after third phase.
+    if (counter == 3) {
+        setTimeout(() => {
+            winFadeOut = game.add.tween(popup).to({ alpha: 0 }, 2000, Phaser.Easing.Linear.None, true);
+            winFadeOut2 = game.add.tween(darkBackground).to({ alpha: 0 }, 2500, Phaser.Easing.Linear.None, true);
+            winFadeOut3 = game.add.tween(installButton).to({ alpha: 0 }, 2500, Phaser.Easing.Linear.None, true);
+        }, 10000)
+
+        setTimeout(() => {
+            popup.visible = false;
+            darkBackground.visible = false;
+            animationPlayed = true;
+        }, 14500)
+    }
+    */
 }
 
 // Rotate animation.
@@ -572,4 +606,41 @@ function rotateAnimation1(button) {
     rotate = button;
     rotate.angle = -4;
     rotate = game.add.tween(button).to({ angle: 4 }, 1000, Phaser.Easing.Linear.None, true, 0, 1000, true);
+}
+
+function coinSelection(coin) {
+
+    if (coin === undefined) {
+        coin = Math.floor(Math.random() * 4);
+    }
+
+    switch (coin) {
+        case 0:
+            coinImage = game.add.spritesheet(game.world.randomX, game.world.randomY, 'Coin_Animation', 126, 129, 5);
+            coinImage.frame = 0;
+            break;
+        case 1:
+            coinImage = game.add.spritesheet(game.world.randomX, game.world.randomY, 'Coin_Animation', 126, 129, 5);
+            coinImage.frame = 1;
+            break;
+        case 2:
+            coinImage = game.add.spritesheet(game.world.randomX, game.world.randomY, 'Coin_Animation', 126, 129, 5);
+            coinImage.frame = 2;
+            break;
+        case 3:
+            coinImage = game.add.spritesheet(game.world.randomX, game.world.randomY, 'Coin_Animation', 126, 129, 5);
+            coinImage.frame = 3;
+            break;
+        case 4:
+            coinImage = game.add.spritesheet(game.world.randomX, game.world.randomY, 'Coin_Animation', 126, 129, 5);
+            coinImage.frame = 4;
+            break;
+    }
+
+    return coinImage;
+
+}
+
+function coinAnimation() {
+
 }
