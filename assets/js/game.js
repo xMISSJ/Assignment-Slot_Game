@@ -346,7 +346,7 @@ function actionOnUp(onClick) {
 
                         // Animation for the pop-up.
                         winAnimation(bigWin);
-                    }, 1100);
+                    }, 1800);
                     animationPlayed = true;
                 }
             }, 5000);
@@ -383,7 +383,7 @@ function actionOnUp(onClick) {
                     winAnimation(hugeWin);
                     installButton.visible = true;
                     rotateAnimation1(installButton);
-                }, 2300);
+                }, 3000);
             }, 5000);
         }
     }
@@ -557,7 +557,7 @@ function bounceSlotMachine(slot) {
 function diamondAnimation(diamond) {
     let tweenTransform = diamond;
     tweenTransform = game.add.tween(diamond.scale);
-    tweenTransform.to({ x: 0.62, y: 0.62 }, 300, Phaser.Easing.Linear.None, true, 0, 300, true);
+    tweenTransform.to({ x: 0.68, y: 0.68 }, 300, Phaser.Easing.Linear.None, true, 0, 300, true);
 }
 
 // Transform animation (win pop-up).
