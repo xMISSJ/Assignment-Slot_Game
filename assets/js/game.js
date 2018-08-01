@@ -252,7 +252,8 @@ function create() {
     winScore2.visible = false;
     interactionLayer.add(winScore2);
 
-    installButton = game.add.sprite(game.world.centerX + 4, game.world.centerY + 120, 'Install_Button');
+    // When pressed on the button the user will be redirected to the Cloud Games page.
+    installButton = game.add.button(game.world.centerX + 4, game.world.centerY + 120, 'Install_Button', function () { window.open("https://cloudgames.com/play", "_blank"); }, this);
     installButton.anchor.set(0.5, 0.5);
     installButton.scale.setTo(0.6, 0.6);
     installButton.visible = false;
@@ -311,10 +312,10 @@ function actionOnUp(onClick) {
 
                     // We will set the velocity of each slot from a reel to 0, making them stand still.
                     slotMachine[reel][slot].body.velocity.y = 0;
-                    slotMachine[reel][0].position.y = 110;
-                    slotMachine[reel][1].position.y = 173;
-                    slotMachine[reel][2].position.y = 223;
-                    slotMachine[reel][3].position.y = 275;
+                    slotMachine[reel][0].position.y = 135;
+                    slotMachine[reel][1].position.y = 198;
+                    slotMachine[reel][2].position.y = 248;
+                    slotMachine[reel][3].position.y = 295;
 
                     // Bounces the slots a bit for extra effect.
                     bounceSlotMachine(slotMachine[reel][slot]);
@@ -345,7 +346,7 @@ function actionOnUp(onClick) {
 
                         // Animation for the pop-up.
                         winAnimation(bigWin);
-                    }, 1000);
+                    }, 1100);
                     animationPlayed = true;
                 }
             }, 5000);
@@ -363,9 +364,14 @@ function actionOnUp(onClick) {
             setTimeout(() => {
                 for (let reel = 0; reel < 4; reel++) {
                     startAnimation(slotMachine[reel][2]);
-                    topDiamondsGlow.visible = true;
+
+                    // Time-out before diamonds start to pop.
+                    setTimeout(() => {
+                        diamondAnimation(slotMachine[reel][2]);
+                        topDiamondsGlow.visible = true;
+                    }, 1300);
                 }
-                // Delays 0.2 seconds before showing a pop-up.
+                // Delays before showing a pop-up.
                 setTimeout(() => {
                     sprite.visible = false;
                     winScore1.visible = false;
@@ -376,7 +382,8 @@ function actionOnUp(onClick) {
                     // Animation for the pop-up.
                     winAnimation(hugeWin);
                     installButton.visible = true;
-                }, 1100);
+                    rotateAnimation1(installButton);
+                }, 2300);
             }, 5000);
         }
     }
@@ -392,32 +399,33 @@ function slotSelection(type) {
     // 7 different logos.
     switch (type) {
         case SLOT_TYPE.BAR:
-            image = game.add.sprite(0, 124, 'Bars_SpriteSheet');
+            image = game.add.sprite(0, 151, 'Bars_SpriteSheet');
             break;
         case SLOT_TYPE.LEMON:
-            image = game.add.sprite(0, 124, 'Slots_Lemon');
+            image = game.add.sprite(0, 151, 'Slots_Lemon');
             break;
         case SLOT_TYPE.MELON:
-            image = game.add.sprite(0, 124, 'Slots_Watermelon');
+            image = game.add.sprite(0, 151, 'Slots_Watermelon');
             break;
         case SLOT_TYPE.TEN:
-            image = game.add.sprite(0, 124, 'Slots_Ten');
+            image = game.add.sprite(0, 151, 'Slots_Ten');
             break;
         case SLOT_TYPE.CHERRY:
-            image = game.add.sprite(0, 124, 'Slots_Cherry');
+            image = game.add.sprite(0, 151, 'Slots_Cherry');
             break;
         case SLOT_TYPE.CROWN:
-            image = game.add.sprite(0, 124, 'Slots_Crown');
+            image = game.add.sprite(0, 151, 'Slots_Crown');
             break;
         case SLOT_TYPE.SEVEN:
-            image = game.add.sprite(0, 124, 'Slots_Seven');
+            image = game.add.sprite(0, 151, 'Slots_Seven');
             break;
         case SLOT_TYPE.DIAMOND:
-            image = game.add.sprite(0, 124, 'Diamonds_SpriteSheet');
+            image = game.add.sprite(0, 151, 'Diamonds_SpriteSheet');
             break;
     }
 
     image.scale.setTo(0.58, 0.58);
+    image.anchor.set(0.5, 0.5);
     slotsLayer.add(image);
 
     return image;
@@ -440,7 +448,7 @@ function startSlotmachine() {
 
             if (slot != 0) {
                 // Aligns to the previous slot in the reel.
-                image.alignTo(slotMachine[reel][slot - 1], Phaser.BOTTOM_CENTER, 0, 7);
+                image.alignTo(slotMachine[reel][slot - 1], Phaser.BOTTOM_CENTER, 0, 5);
             }
 
             // Position slots to the correct reel.
@@ -484,16 +492,16 @@ function positionSlot(image, reel) {
 
     switch (reel) {
         case 0:
-            image.position.x = 208;
+            image.position.x = 233.5;
             break;
         case 1:
-            image.position.x = 302;
+            image.position.x = 327;
             break;
         case 2:
-            image.position.x = 398;
+            image.position.x = 423;
             break;
         case 3:
-            image.position.x = 494;
+            image.position.x = 520;
             break;
     }
 }
@@ -545,9 +553,23 @@ function bounceSlotMachine(slot) {
     bounce1.to({ y: slot.position.y + 10 }, 500, Phaser.Easing.Bounce.Out, true);
 }
 
-// Transform animation.
+// Transform animation (diamond).
+function diamondAnimation(diamond) {
+    let tweenTransform = diamond;
+    tweenTransform = game.add.tween(diamond.scale);
+    tweenTransform.to({ x: 0.62, y: 0.62 }, 300, Phaser.Easing.Linear.None, true, 0, 300, true);
+}
+
+// Transform animation (win pop-up).
 function winAnimation(popup) {
     let tweenTransform = popup;
     tweenTransform = game.add.tween(popup.scale);
     tweenTransform.to({ x: 0.7, y: 0.7 }, 300, Phaser.Easing.Linear.None, true, 0, 300, true);
+}
+
+// Rotate animation.
+function rotateAnimation1(button) {
+    rotate = button;
+    rotate.angle = -4;
+    rotate = game.add.tween(button).to({ angle: 4 }, 1000, Phaser.Easing.Linear.None, true, 0, 1000, true);
 }
