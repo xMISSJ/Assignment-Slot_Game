@@ -318,7 +318,7 @@ function actionOnUp(onClick) {
                     slotMachine[reel][3].position.y = 295;
 
                     // Bounces the slots a bit for extra effect.
-                    bounceSlotMachine(slotMachine[reel][slot]);
+                    bounceAnimation(slotMachine[reel][slot]);
 
                     // The button stops glowing at the last reel when the middle slot has stopped.
                     if (slotMachine[3][3].body.velocity.y <= 0) {
@@ -547,7 +547,7 @@ function startAnimation(item) {
 }
 
 // Bounce animation.
-function bounceSlotMachine(slot) {
+function bounceAnimation(slot) {
     bounce1 = slot;
     bounce1 = game.add.tween(slot);
     bounce1.to({ y: slot.position.y + 10 }, 500, Phaser.Easing.Bounce.Out, true);
