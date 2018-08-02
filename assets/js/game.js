@@ -1,9 +1,12 @@
+/**
+ * Playable advertisement demo.
+ * This is a Cloud Games Slot Machine assignment made with the framework PhaserJs.
+ * @author Jenny Sun <xmissj96@gmail.com>
+ */
+
 // Initiate the Phaser framework.
 const game = new Phaser.Game(750, 450, Phaser.AUTO, '', { preload: preload, create: create, update, update });
 
-function init() {
-
-}
 // Load the game assets before the game starts.
 function preload() {
 
@@ -46,7 +49,6 @@ function preload() {
     game.load.spritesheet('Coin_Animation', 'assets/coin-animation.png', 126, 129, 5);
 }
 
-// Using JSON to create slot types.
 const SLOT_TYPE = {
     "BAR": 0,
     "LEMON": 1,
@@ -87,17 +89,11 @@ function create() {
     animationPlayed = true;
 
     counter = 0;
-
-    // Slots scroll speed.
     scrollSpeed = 1000;
-
-    // Up-down-movement speed of "Start Spinning"-image.
     spinStartSpeed = 15;
-
     maxUp = 326;
     maxDown = 331;
 
-    // Physics System.
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     // Creates layers and adds a group to each. The groups are ordered from lowest to highest.
@@ -139,11 +135,10 @@ function create() {
     reelBackgroundLayer.add(reelBackground3);
     reelBackgroundLayer.add(reelBackground4);
 
-    // Create new JSON object.
     slotMachine = new Object();
     startSlotmachine();
 
-    //Adds the greyish reel overlay.
+    // Adds the greyish reel overlay.
     reelOverlay1 = game.add.image(204.8, 177, 'Reel_Overlay');
     reelOverlay2 = game.add.image(0, 0, 'Reel_Overlay').alignTo(reelOverlay1, Phaser.RIGHT_CENTER, 0);
     reelOverlay3 = game.add.image(0, 0, 'Reel_Overlay').alignTo(reelOverlay2, Phaser.RIGHT_CENTER, 3);
@@ -201,10 +196,8 @@ function create() {
     spinStart.visible = true;
     interactionLayer.add(spinStart);
 
-    // Enables the Physics System for spinStart.
     game.physics.enable(spinStart, Phaser.Physics.ARCADE);
 
-    // Takes the first sprite from the spritesheet.
     sprite = game.add.sprite(376.5, 393, 'Numbers_SpriteSheet');
     sprite.scale.setTo(0.7, 0.7);
     sprite.frame = 0;
@@ -226,27 +219,32 @@ function create() {
     topBarsGlow = game.add.sprite(316, 58, 'Top_Bars_Glow');
     topBarsGlow.scale.setTo(0.62, 0.62);
     topBarsGlow.visible = false;
+    topBarsGlow.preUpdate();
     interactionLayer.add(topBarsGlow);
 
     topDiamondsGlow = game.add.sprite(303, 33, 'Top_Diamonds_Glow');
     topDiamondsGlow.scale.setTo(0.62, 0.62);
     topDiamondsGlow.visible = false;
+    topDiamondsGlow.preUpdate();
     interactionLayer.add(topDiamondsGlow);
 
     darkBackground = game.add.sprite(0, 0, 'Background_Overlay');
     darkBackground.visible = false;
+    darkBackground.preUpdate();
     backgroundLayer.add(darkBackground);
 
     bigWin = game.add.sprite(game.world.centerX, game.world.centerY, 'Big_Win');
     bigWin.anchor.set(0.5, 0.5)
     bigWin.scale.setTo(0.75, 0.75);
     bigWin.visible = false;
+    bigWin.preUpdate();
     highestLayer.add(bigWin);
 
     hugeWin = game.add.sprite(game.world.centerX, game.world.centerY + 15, 'Huge_Win');
     hugeWin.anchor.set(0.5, 0.5);
     hugeWin.scale.setTo(0.75, 0.75);
     hugeWin.visible = false;
+    hugeWin.preUpdate();
     highestLayer.add(hugeWin);
 
     winScore1 = game.add.sprite(306, 393, 'WinScore_1');
@@ -267,7 +265,6 @@ function create() {
     highestLayer.add(installButton);
 }
 
-// Executed per frame.
 function update() {
 
     // Checks the position of the "Start Spinning"-image and moves this up and down.
@@ -283,6 +280,11 @@ function update() {
     }
 }
 
+/**
+ * Performs actions when the spinStart button has been pressed.
+ * Counter keeps up the times the slotmachine has been started (user has pressed on spinStart button).
+ * @param {boolean} onClick 
+ */
 function actionOnUp(onClick) {
 
     if (onClick && !slotMachineActivated && !(bigWin.visible || hugeWin.visible) && animationPlayed) {
@@ -336,23 +338,21 @@ function actionOnUp(onClick) {
             }, delay + 600);
         }
 
-        // For the first spin we make it so the bars blink all at once after the slots stopped spinning.
+
         if (counter == 1) {
             setTimeout(() => {
                 for (let reel = 1; reel < 4; reel++) {
                     blinkAnimation(slotMachine[reel][2]);
                     topBarsGlow.visible = true;
 
-                    // Delays before showing a pop-up.
                     setTimeout(() => {
                         sprite.visible = false;
                         winScore1.visible = true;
                         darkBackground.visible = true;
                         bigWin.visible = true;
-
-                        // Animation for the pop-up.
                         winAnimation(bigWin);
                     }, 1800);
+
                 }
             }, 5000);
         } else {
@@ -365,22 +365,18 @@ function actionOnUp(onClick) {
             animationPlayed = true;
         }
 
-        // For the last spin we make it so the diamonds blink all at once after the slots stopped spinning.
         if (counter == 3) {
             setTimeout(() => {
                 for (let reel = 0; reel < 4; reel++) {
-                    // Animation for the diamond blinking.
+
                     blinkAnimation(slotMachine[reel][2]);
 
-                    // Time-out before diamonds start to pop.
                     setTimeout(() => {
-
-                        // Animation for the diamonds popping.
                         diamondAnimation(slotMachine[reel][2]);
                         topDiamondsGlow.visible = true;
                     }, 1300);
                 }
-                // Delays before showing a pop-up.
+
                 setTimeout(() => {
                     sprite.visible = false;
                     winScore1.visible = false;
@@ -389,22 +385,21 @@ function actionOnUp(onClick) {
                     darkBackground.alpha = 1;
                     hugeWin.visible = true;
 
-                    // Animation for the pop-up.
                     winAnimation(hugeWin);
                     installButton.visible = true;
-
-                    // Animation for the jackpot coins drop.
                     coinAnimation();
-
-                    // Animation for the installButton rotating.
                     rotateAnimation1(installButton);
+
                 }, 3000);
             }, 5000);
         }
     }
 }
 
-// If type is not defined, a random slot will be chosen.
+/**
+ * Selects a random image sprite and returns this.
+ * @param {int} type 
+ */
 function slotSelection(type) {
 
     if (type === undefined) {
@@ -446,15 +441,18 @@ function slotSelection(type) {
     return image;
 }
 
+/**
+ * Adds and positions the slots in the right position for each reel before slotmachine start spinning.
+ * @function
+ */
 function startSlotmachine() {
 
-    // Initializing slots.
     for (let reel = 0; reel < 4; reel++) {
 
         // Creates array in the JSON object.
         slotMachine[reel] = new Array();
 
-        // Shows three slots for each reel.
+        // Shows four slots for each reel.
         for (let slot = 0; slot < 4; slot++) {
 
             image = slotSelection();
@@ -475,20 +473,23 @@ function startSlotmachine() {
     }
 }
 
-// Function to create an illusion of the slots scrolling.
+/**
+ * Creates an illusion of having infinite slots scrolling down per reel.
+ * @function
+ */
 function slotsIllusion() {
 
     for (let reel = 0; reel < 4; reel++) {
 
-        //console.log(slotMachine[i][2].body.position.y);
         if (slotMachine[reel][3].position.y >= 335) {
 
-            // Destroys the last row of slot images.
+            // Destroys the last row of slot sprites.
             slotMachine[reel][3].destroy();
 
-            // Removes the last row of slot images.
+            // Removes the last row of slot sprites.
             slotMachine[reel].pop();
 
+            // Adds new slot sprite for each reel to the slots.
             slotMachine[reel].unshift(slotSelection());
 
             game.physics.arcade.enable(slotMachine[reel][0]);
@@ -501,12 +502,17 @@ function slotsIllusion() {
     }
 }
 
-// Positions every first image of each reel accordingly.
+/**
+ * Correctly places a slot sprite to a designated x position.
+ * @function
+ * @param {Object} image - A Phaser sprite object.
+ * @param {int} image.position.x - The x position of the Phaser sprite object.
+ * @param {int} reel - A reel from the slot machine starting from 0, left to right.
+ */
 function positionSlot(image, reel) {
 
     game.physics.arcade.enable(image);
 
-    // Each reel is positioned at a different x-axis.
     switch (reel) {
         case 0:
             image.position.x = 233.5;
@@ -523,12 +529,18 @@ function positionSlot(image, reel) {
     }
 }
 
+/**
+ * First spin: three bars are displayed horizontally from left to right, skipping the third slot of the first reel.
+ * Third spin: four diamonds are displayed horizonally from left to right.
+ * At default: all third slots of each reel are random.
+ * @function
+ * @param {int} reel - A reel from the slot machine starting from 0, left to right.
+ */
 
 function slotMachineEnd(reel) {
 
     // Makes it so the reels are manipulated like bars, random, diamonds.
     switch (counter) {
-        // At the first spin, the user will get bars for the third slot of the second to last reel.
         case 1:
             if (reel != 0) {
                 slotMachine[reel][2].destroy();
@@ -544,13 +556,11 @@ function slotMachineEnd(reel) {
                 positionSlot(slotMachine[reel][2], reel);
             }
             break;
-        // At the third spin, the user will get diamonds for the third slot for each reel.
         case 3:
             slotMachine[reel][2].destroy();
             slotMachine[reel][2] = slotSelection(SLOT_TYPE.DIAMOND);
             positionSlot(slotMachine[reel][2], reel);
             break;
-        // At default all the slots are random.
         default:
             slotMachine[reel][2].destroy();
             slotMachine[reel][2] = slotSelection();
@@ -559,51 +569,61 @@ function slotMachineEnd(reel) {
     }
 }
 
-// Blink animation.
-function blinkAnimation(item) {
-    let spriteSheet = item;
+/**
+ * Animates the diamond sprite to blink (alpha: 0 to alpha: 1).
+ * @function
+ * @param {Object} diamond - a Phaser spritesheet.
+ */
+function blinkAnimation(diamond) {
+    let spriteSheet = diamond;
     let blink = game.add.tween(spriteSheet);
     spriteSheet.frame = 0;
     blink.to({ frame: 1 }, 200, Phaser.Easing.Linear.None, true, 0, 200, true);
 }
 
-// Bounce animation.
+/**
+ * Animates the slot sprite to bounce up a little.
+ * @function
+ * @param {Object} slot - a Phaser sprite.
+ */
 function bounceAnimation(slot) {
     bounce1 = slot;
     bounce1 = game.add.tween(slot);
     bounce1.to({ y: slot.position.y + 10 }, 500, Phaser.Easing.Bounce.Out, true);
 }
 
-// Transform animation (diamond).
+/**
+ * Animtes the diamond sprite to pop-out by changing the scale.
+ * @function
+ * @param {Object} diamond 
+ */
 function diamondAnimation(diamond) {
     diamondScale = diamond;
     diamondScale = game.add.tween(diamond.scale).to({ x: 0.68, y: 0.68 }, 300, Phaser.Easing.Linear.None, true, 0, 300, true);
 }
 
-// Transform animation (win pop-up).
+/**
+ * Shows a popup sprite which becomes smaller and bigger over time and eventually fades out.
+ * @function
+ * @param {Object} popup 
+ */
 function winAnimation(popup) {
     winScale = popup;
     winScale = game.add.tween(popup.scale).to({ x: 0.7, y: 0.7 }, 300, Phaser.Easing.Linear.None, true, 0, 300, true);
 
     if (counter == 1) {
-        // Delays before the pop-up and darkBackground are faded out.
+
         setTimeout(() => {
-            // Fades out the bigWin popup and the darkBackground.
             winFadeOut = game.add.tween(popup).to({ alpha: 0 }, 1500, Phaser.Easing.Linear.None, true);
             winFadeOut2 = game.add.tween(darkBackground).to({ alpha: 0 }, 2000, Phaser.Easing.Linear.None, true);
         }, 2000)
 
-        // Then makes the pop-up and darkBackground invisible.
         setTimeout(() => {
             popup.visible = false;
             darkBackground.visible = false;
             animationPlayed = true;
         }, 4500)
     }
-
-    // if (counter == 3) {
-    //     coinAnimation();
-    // }
 
     /* Uncomment this section if you wish for the user to be able to continue playing after third phase.
     if (counter == 3) {
@@ -622,44 +642,56 @@ function winAnimation(popup) {
     */
 }
 
-// Rotate animation.
+/**
+ * Animates the button called "button" to rotate slightly (angle: -4 to angle: 4 in a loop).
+ * @function
+ * @param {Object} button 
+ */
 function rotateAnimation1(button) {
     rotate = button;
     rotate.angle = -4;
     rotate = game.add.tween(button).to({ angle: 4 }, 1000, Phaser.Easing.Linear.None, true, 0, 1000, true);
 }
 
-// Function to select random coin from Coin_Animation.
+/**
+ * Selects a random coinImage frame ( 0 to 4 ) from the "Coin_Animation"-spritesheet and returns this.
+ * @function
+ */
 function coinSelection() {
     let coinImage = game.add.sprite(-20 + (game.world.randomX), -450, 'Coin_Animation');
-    // Fixes bug that coinImage flickers at x:0 and y:0.
+    // Fixes bug that coinImage flickers at x: 0 and y: 0.
     coinImage.preUpdate();
-    coinImage.frame = Math.floor(Math.random() * 5);
+    coinImage.frame = Math.floor(Math.random() * 4);
     coinsLayer.add(coinImage);
     return coinImage;
 }
 
+/**
+ * Animates coins to fall down in the screen.
+ * The coin is chosen with the coinSelection() function.
+ * @function
+ */
 function coinAnimation() {
 
     let delay = 0;
 
-    // Creates coin at the frequency of 20 loops.
-    for (let loop = 0; loop < 40; loop++) {
+    for (let loop = 0; loop < 50; loop++) {
 
         // Increases for every loop with a minimum of 200ms and will have a difference of +- 50ms each loop.
         delay += Math.floor(Math.random() * 50) + 200;
 
         // Initializes a setTimeout to add delay to the coin generation.
         setTimeout(() => {
-            // Selects random coin.
+
             let coin = coinSelection();
-            coin.scale.set(game.rnd.realInRange(0.4, 0.6));
+            coin.scale.set(game.rnd.realInRange(0.3, 0.6));
             let speed = game.rnd.between(800, 1000);
 
             // Coins fall down.
             game.add.tween(coin).to({ y: +500 }, speed, Phaser.Easing.Linear.None, true, -200, 500, false);
+
             // Coins rotate slightly.
-            game.add.tween(coin).to({ angle: Math.floor(Math.random() * 30) + 20 }, speed, Phaser.Easing.Linear.None, true, 0, 100, true)
+            game.add.tween(coin).to({ angle: Math.floor(Math.random() * 20) + -20 }, speed, Phaser.Easing.Linear.None, true, 0, 50, true)
 
         }, delay);
     }
